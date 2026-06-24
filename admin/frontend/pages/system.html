@@ -1,0 +1,1582 @@
+<div class="page-container system-container">
+  <!-- System Header -->
+  <div class="page-header">
+    <h2><i class="fas fa-cog"></i> System Administration</h2>
+    <p class="page-subtitle">Monitor system health, manage resources, and configure system settings</p>
+    <div class="page-info">
+      <p><strong>How it works:</strong> Monitor real-time system performance, manage backups, configure token limits,
+        and review system logs. Use the tabs below to access different system management tools.</p>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="health">
+      <i class="fas fa-heartbeat"></i> Health Check
+      <span class="status-indicator status-green" title="Operational"></span>
+    </button>
+    <button class="tab-btn" data-tab="backup">
+      <i class="fas fa-database"></i> Backup & Restore
+      <span class="status-indicator status-green" title="Operational"></span>
+    </button>
+    <button class="tab-btn" data-tab="tokenization">
+      <i class="fas fa-sliders-h"></i> Tokenization
+      <span class="status-indicator status-green" title="Active"></span>
+    </button>
+
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+
+    <!-- Health Check Tab -->
+    <div id="health-tab" class="tab-panel active">
+      <!-- Health Check Header -->
+      <div class="tab-header">
+        <h3><i class="fas fa-heartbeat"></i> System Health Monitor</h3>
+        <p class="tab-subtitle">Real-time monitoring of system performance and health status</p>
+        <div class="tab-info">
+          <p><strong>How it works:</strong> Monitor CPU, memory, disk usage, and system performance metrics in
+            real-time. View detailed health information and system statistics.</p>
+        </div>
+      </div>
+
+      <!-- Enhanced System Health Display -->
+      <div class="dashboard-grid">
+        <div class="card dashboard-card">
+          <div class="card-header">
+            <h3><i class="fas fa-heartbeat card-icon"></i> System Health</h3>
+            <span class="badge ok pulse">MONITORING</span>
+          </div>
+          <div class="health-status" id="healthStatus">
+            <div class="loading-spinner">Loading system status...</div>
+          </div>
+        </div>
+
+        <div class="card dashboard-card">
+          <div class="card-header">
+            <h3><i class="fas fa-chart-line card-icon"></i> System Statistics</h3>
+            <button id="refresh-health" class="btn primary"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+          <div class="system-stats" id="systemStats">
+            <div class="loading-spinner">Loading statistics...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resource Monitor -->
+      <div class="card wide-card" style="margin-top: 24px;">
+        <div class="card-header">
+          <h3><i class="fas fa-microchip card-icon"></i> Live Resource Monitor</h3>
+          <span class="badge ok pulse" id="resource-live-badge">LIVE</span>
+        </div>
+        <div class="resource-monitor-grid">
+          <!-- CPU -->
+          <div class="resource-block">
+            <div class="resource-block-header">
+              <span class="resource-label"><i class="fas fa-microchip"></i> CPU Usage</span>
+              <span class="resource-value" id="cpu-value">—</span>
+            </div>
+            <div class="resource-bar-track">
+              <div class="resource-bar-fill" id="cpu-bar" style="width:0%"></div>
+            </div>
+            <div class="resource-status" id="cpu-status">Loading...</div>
+          </div>
+          <!-- Memory -->
+          <div class="resource-block">
+            <div class="resource-block-header">
+              <span class="resource-label"><i class="fas fa-memory"></i> Memory Usage</span>
+              <span class="resource-value" id="memory-value">—</span>
+            </div>
+            <div class="resource-bar-track">
+              <div class="resource-bar-fill" id="memory-bar" style="width:0%"></div>
+            </div>
+            <div class="resource-status" id="memory-status">Loading...</div>
+          </div>
+          <!-- Disk -->
+          <div class="resource-block">
+            <div class="resource-block-header">
+              <span class="resource-label"><i class="fas fa-hdd"></i> Disk Usage</span>
+              <span class="resource-value" id="disk-value">—</span>
+            </div>
+            <div class="resource-bar-track">
+              <div class="resource-bar-fill" id="disk-bar" style="width:0%"></div>
+            </div>
+            <div class="resource-status" id="disk-status">Loading...</div>
+          </div>
+        </div>
+        <div class="resource-footer">
+          <span id="resource-last-updated">Last updated: —</span>
+        </div>
+      </div>
+
+      <!-- Detailed Health Information -->
+      <div class="card wide-card" style="margin-top: 24px;">
+        <div class="card-header">
+          <h3><i class="fas fa-server card-icon"></i> Detailed System Information</h3>
+          <span class="badge" id="overall-health-badge">CHECKING</span>
+        </div>
+        <div class="detailed-health" id="detailedHealth">
+          <div class="loading-spinner">Loading detailed health information...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Backup & Restore Tab -->
+    <div id="backup-tab" class="tab-panel">
+      <!-- Backup Header -->
+      <div class="tab-header">
+        <h3><i class="fas fa-database"></i> Backup & Restore</h3>
+        <p class="tab-subtitle">Create system backups and restore from previous backup files</p>
+        <div class="tab-info">
+          <p><strong>How it works:</strong> Create complete system backups including database, files, and
+            configurations. Restore system state from backup files when needed.</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h3><i class="fas fa-database"></i> Create Backup</h3>
+          <div class="backup-section">
+            <p>Create a complete system backup including:</p>
+            <ul>
+              <li><i class="fas fa-check-circle" style="color: var(--ok); margin-right: 8px;"></i> Database (MySQL dump)
+              </li>
+              <li><i class="fas fa-check-circle" style="color: var(--ok); margin-right: 8px;"></i> Uploaded files</li>
+              <li><i class="fas fa-check-circle" style="color: var(--ok); margin-right: 8px;"></i> Configuration
+                settings</li>
+              <li><i class="fas fa-check-circle" style="color: var(--ok); margin-right: 8px;"></i> User data & tokens
+              </li>
+            </ul>
+            <div class="backup-controls">
+              <button id="create-backup" class="btn primary"><i class="fas fa-archive"></i> Create Backup</button>
+              <span id="backup-status" class="status-text"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><i class="fas fa-undo"></i> Restore Backup</h3>
+          <div class="restore-section">
+            <p>Restore from a previous backup:</p>
+            <div class="file-upload">
+              <input type="file" id="backup-file" accept=".zip" style="display: none;">
+              <button id="select-backup" class="btn secondary"><i class="fas fa-file-upload"></i> Select Backup
+                File</button>
+              <span id="selected-file" class="file-name"></span>
+            </div>
+            <div class="restore-controls">
+              <button id="restore-backup" class="btn danger" disabled><i class="fas fa-exclamation-triangle"></i>
+                Restore System</button>
+              <span id="restore-status" class="status-text"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><i class="fas fa-history"></i> Backup History</h3>
+        <div class="backup-history">
+          <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Backup Name</th>
+                <th>Created</th>
+                <th>Size</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="backup-history-tbody">
+              <tr>
+                <td colspan="5">No backups found</td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tokenization Tab -->
+    <div id="tokenization-tab" class="tab-panel">
+      <!-- Tokenization Header -->
+      <div class="tab-header">
+        <h3><i class="fas fa-sliders-h"></i> Token Management</h3>
+        <p class="tab-subtitle">Configure global token limits and manage user token allocations</p>
+        <div class="tab-info">
+          <p><strong>How it works:</strong> Set system-wide token limits for different user types including students and
+            guests.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><i class="fas fa-sliders-h"></i> Token Limit Configuration</h3>
+
+        <!-- Global Token Limit -->
+        <div class="token-limit-row">
+          <div class="limit-info">
+            <label class="limit-label">Global Token Limit:</label>
+            <span class="current-value" id="current-global-limit">Loading...</span>
+          </div>
+          <div class="limit-controls">
+            <input id="global-limit" class="input limit-input" type="number" placeholder="Enter new limit">
+            <button id="save-global-limit" class="btn primary limit-btn">
+              <i class="fas fa-save"></i> Update Limit
+            </button>
+          </div>
+          <div id="global-limit-status" class="limit-status"></div>
+        </div>
+
+        <!-- Student Token Limit -->
+        <div class="token-limit-row">
+          <div class="limit-info">
+            <label class="limit-label">Student Token Limit:</label>
+            <span class="current-value" id="current-student-limit">Loading...</span>
+          </div>
+          <div class="limit-controls">
+            <input id="student-token-limit" class="input limit-input" type="number" placeholder="Override for all students">
+            <button id="save-student-limit" class="btn primary limit-btn">
+              <i class="fas fa-save"></i> Update Limit
+            </button>
+          </div>
+          <div id="student-limit-status" class="limit-status"></div>
+        </div>
+
+        <!-- Guest Token Limit -->
+        <div class="token-limit-row">
+          <div class="limit-info">
+            <label class="limit-label">Guest Token Limit:</label>
+            <span class="current-value" id="current-guest-limit">Loading...</span>
+          </div>
+          <div class="limit-controls">
+            <input id="guest-token-limit" class="input limit-input" type="number" placeholder="Enter new limit">
+            <button id="save-guest-limit" class="btn primary limit-btn">
+              <i class="fas fa-save"></i> Update Limit
+            </button>
+          </div>
+          <div id="guest-limit-status" class="limit-status"></div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<style>
+  /* CSS Variables for Token Management UI */
+  :root {
+    --success: #28a745;
+    --primary-light: rgba(0, 123, 255, 0.1);
+  }
+
+  .system-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .tab-nav {
+    display: flex;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 24px;
+    gap: 8px;
+    background: var(--card);
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .tab-btn {
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+
+  .tab-btn:hover {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  .tab-btn.active {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 2px 4px rgba(13, 114, 234, 0.3);
+  }
+
+  .tab-btn i {
+    font-size: 16px;
+  }
+
+  .tab-content {
+    min-height: 500px;
+  }
+
+  .tab-panel {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .health-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .health-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: var(--border);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+  }
+
+  .health-item:hover {
+    background: var(--card);
+    border-color: var(--accent);
+  }
+
+  .health-label {
+    font-weight: 500;
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  .health-value {
+    font-weight: 600;
+    color: var(--ok);
+    font-size: 14px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: var(--accent);
+  }
+
+  .stat-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--ok));
+  }
+
+  .stat-number {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+
+  .chart-container {
+    height: 200px;
+    margin-bottom: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+  }
+
+  .resource-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+
+  .resource-bars {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .resource-bars .bar {
+    width: 100%;
+    height: 12px;
+    background: var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .resource-bars .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--ok));
+    transition: width 0.5s ease;
+    border-radius: 8px;
+    position: relative;
+  }
+
+  .resource-bars .fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .metric-item:hover {
+    background: var(--border);
+    border-color: var(--accent);
+  }
+
+  .metric-label {
+    font-weight: 500;
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  .metric-value {
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 14px;
+  }
+
+  .backup-section,
+  .restore-section {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .backup-controls,
+  .restore-controls {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .file-upload {
+    margin: 16px 0;
+    padding: 16px;
+    background: var(--border);
+    border-radius: 8px;
+    border: 2px dashed var(--muted);
+    transition: all 0.2s ease;
+  }
+
+  .file-upload:hover {
+    border-color: var(--accent);
+    background: var(--card);
+  }
+
+  .file-name {
+    margin-left: 12px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  /* Token Limit Rows - Vertical Layout */
+  .token-limit-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .token-limit-row:hover {
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+  }
+
+  .limit-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .limit-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 16px;
+    min-width: 180px;
+  }
+
+  .current-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+    background: var(--primary-light);
+    padding: 6px 16px;
+    border-radius: 20px;
+    display: inline-block;
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .limit-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .limit-input {
+    width: 200px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .limit-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .limit-status {
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .limit-status i {
+    margin-right: 4px;
+  }
+
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .input-group label {
+    font-weight: 500;
+    min-width: 140px;
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  .user-token-controls {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .search-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .token-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .analytics-section {
+    margin-top: 24px;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .analytics-controls {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .log-controls {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .filter-group {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .log-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .log-stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+
+  .log-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+    padding: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .status-text {
+    margin-left: 12px;
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* Enhanced button styles */
+  .btn.danger {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+  }
+
+  .btn.danger:hover {
+    background: #c82333;
+    border-color: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+  }
+
+  .btn.secondary {
+    background: var(--muted);
+    color: white;
+    border-color: var(--muted);
+  }
+
+  .btn.secondary:hover {
+    background: #5a6268;
+    border-color: #5a6268;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+  }
+
+  /* Status indicators */
+  .status-ok {
+    color: var(--ok);
+    font-weight: 600;
+  }
+
+  .status-warning {
+    color: var(--warn);
+    font-weight: 600;
+  }
+
+  .status-error {
+    color: var(--danger);
+    font-weight: 600;
+  }
+
+  .usage-success {
+    color: var(--ok);
+    font-weight: 600;
+  }
+
+  .usage-warning {
+    color: var(--warn);
+    font-weight: 600;
+  }
+
+  .usage-danger {
+    color: var(--danger);
+    font-weight: 600;
+  }
+
+  .severity-error {
+    color: var(--danger);
+    font-weight: 600;
+  }
+
+  .severity-warning {
+    color: var(--warn);
+    font-weight: 600;
+  }
+
+  .severity-info {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .severity-debug {
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+
+
+
+  .resource-monitor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    padding: 24px 16px 28px;
+  }
+
+  .resource-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .resource-block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .resource-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .resource-label i {
+    color: var(--accent);
+    font-size: 15px;
+  }
+
+  .resource-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    min-width: 60px;
+    text-align: right;
+  }
+
+  .resource-bar-track {
+    width: 100%;
+    height: 22px;
+    background: var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .resource-bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.6s ease, background 0.4s ease;
+    background: var(--ok);
+    position: relative;
+  }
+
+  .resource-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  .resource-bar-fill.warn { background: var(--warn); }
+  .resource-bar-fill.danger { background: var(--danger); }
+
+  .resource-status {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+    margin-top: 4px;
+  }
+
+  .resource-footer {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  @media (max-width: 768px) {
+    .resource-monitor-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+
+  .history-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .history-item {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .history-item:last-child {
+    border-bottom: none;
+  }
+
+  .history-prompt {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .history-response {
+    font-size: 13px;
+    color: var(--text);
+    background: var(--border);
+    padding: 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .history-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .btn.small {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+
+
+  /* Status Indicators */
+  .status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 10px;
+    animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  .status-green {
+    background-color: #27ae60;
+    box-shadow: 0 0 10px rgba(39, 174, 96, 0.8);
+    border: 2px solid rgba(39, 174, 96, 0.3);
+  }
+
+  .status-yellow {
+    background-color: #f39c12;
+    box-shadow: 0 0 10px rgba(243, 156, 18, 0.8);
+    border: 2px solid rgba(243, 156, 18, 0.3);
+  }
+
+  .status-red {
+    background-color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.8);
+    border: 2px solid rgba(231, 76, 60, 0.3);
+  }
+
+  .status-crimson {
+    background-color: #c0392b;
+    box-shadow: 0 0 12px rgba(192, 57, 43, 0.9);
+    border: 2px solid rgba(192, 57, 43, 0.4);
+  }
+
+  .status-gray {
+    background-color: #7f8c8d;
+    box-shadow: 0 0 6px rgba(127, 140, 141, 0.5);
+    border: 2px solid rgba(127, 140, 141, 0.2);
+    animation: none;
+    opacity: 0.7;
+  }
+
+  @keyframes pulse {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .tab-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-right: 12px;
+  }
+
+  .tab-btn i {
+    margin-right: 6px;
+  }
+
+  /* Alert Banners */
+  .alert-banner {
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    border-left: 4px solid;
+  }
+
+  .alert-banner i {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .alert-info {
+    background: linear-gradient(135deg, #e8f4f8 0%, #d4e9f2 100%);
+    color: #2980b9;
+    border-left-color: #3498db;
+  }
+
+  .alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+    color: #856404;
+    border-left-color: #f39c12;
+    animation: warningPulse 3s ease-in-out infinite;
+  }
+
+  .alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+    border-left-color: #e74c3c;
+    animation: dangerPulse 2s ease-in-out infinite;
+  }
+
+  .alert-crimson {
+    background: linear-gradient(135deg, #fadbd8 0%, #f1948a 100%);
+    color: #641e16;
+    border-left-color: #c0392b;
+    animation: crimsonPulse 1.5s ease-in-out infinite;
+    font-weight: 600;
+  }
+
+  @keyframes warningPulse {
+
+    0%,
+    100% {
+      box-shadow: 0 2px 8px rgba(243, 156, 18, 0.2);
+    }
+
+    50% {
+      box-shadow: 0 4px 16px rgba(243, 156, 18, 0.4);
+    }
+  }
+
+  @keyframes dangerPulse {
+
+    0%,
+    100% {
+      box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+    }
+
+    50% {
+      box-shadow: 0 4px 16px rgba(231, 76, 60, 0.5);
+    }
+  }
+
+  @keyframes crimsonPulse {
+
+    0%,
+    100% {
+      box-shadow: 0 2px 8px rgba(192, 57, 43, 0.4);
+    }
+
+    50% {
+      box-shadow: 0 6px 20px rgba(192, 57, 43, 0.6);
+    }
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  /* Responsive design for system page */
+  @media (max-width: 768px) {
+    .system-container {
+      padding: 0 8px;
+    }
+
+    .tab-nav {
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 4px;
+    }
+
+    .tab-btn {
+      padding: 8px 12px;
+      font-size: 12px;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .tab-btn i {
+      font-size: 14px;
+    }
+
+
+
+    .health-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .metrics-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .token-limit-row {
+      padding: 16px;
+      gap: 16px;
+    }
+
+    .limit-info {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+    }
+
+    .limit-label {
+      min-width: auto;
+    }
+
+    .limit-controls {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .limit-input {
+      width: 100%;
+      max-width: 250px;
+    }
+
+    .limit-btn {
+      width: 100%;
+      max-width: 200px;
+    }
+
+    .limit-status {
+      text-align: center;
+    }
+
+    .search-bar {
+      flex-direction: column;
+    }
+
+    .log-stats {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .log-actions {
+      flex-direction: column;
+    }
+
+    .filter-group {
+      flex-direction: column;
+    }
+
+    .backup-controls,
+    .restore-controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .analytics-controls {
+      flex-direction: column;
+    }
+
+    .pagination {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tab-btn {
+      padding: 6px 8px;
+      font-size: 11px;
+    }
+
+    .card {
+      padding: 16px;
+    }
+
+    .health-item,
+    .metric-item {
+      padding: 12px;
+    }
+
+    .stat-item {
+      padding: 16px;
+    }
+
+    .stat-number {
+      font-size: 24px;
+    }
+  }
+</style>
+
+
+<script>
+  // System Page JavaScript
+  (function () {
+    console.log('System page script loaded');
+
+    let refreshInterval = null;
+
+    // Load performance stats
+    async function loadPerformanceStats() {
+      try {
+        const stats = await AdminApi.apiGet('/admin/performance');
+
+        // Update performance metrics
+        document.getElementById('requests-per-min').textContent = stats.requests_per_min || 0;
+        document.getElementById('avg-response-time').textContent = `${stats.avg_response_time || 0}ms`;
+        document.getElementById('error-rate').textContent = `${stats.error_rate || 0}%`;
+        document.getElementById('db-connections').textContent = stats.db_connections || 1;
+
+        // Update system metrics if elements exist
+        const cpuEl = document.getElementById('cpu-usage');
+        const memEl = document.getElementById('memory-usage');
+
+        if (cpuEl) cpuEl.textContent = `${stats.cpu_percent || 0}%`;
+        if (memEl) memEl.textContent = `${stats.memory_percent || 0}%`;
+
+        // Update Resources tab
+        updateResourcesTab(stats);
+
+        console.log('Performance stats loaded:', stats);
+      } catch (error) {
+        console.error('Failed to load performance stats:', error);
+      }
+    }
+
+    // Update Resources tab with system metrics
+    function updateResourcesTab(stats) {
+      // CPU
+      const cpuPercent = stats.cpu_percent || 0;
+      const cpuPercentageEl = document.getElementById('cpu-percentage');
+      const cpuLoadEl = document.getElementById('cpu-load-value');
+      const cpuStatusEl = document.getElementById('cpu-status');
+      const cpuCircle = document.getElementById('cpu-circle');
+
+      if (cpuPercentageEl) cpuPercentageEl.textContent = `${Math.round(cpuPercent)}%`;
+      if (cpuLoadEl) cpuLoadEl.textContent = `${cpuPercent.toFixed(1)}%`;
+      if (cpuStatusEl) {
+        if (cpuPercent < 50) {
+          cpuStatusEl.textContent = 'Normal';
+          cpuStatusEl.style.color = '#27ae60';
+        } else if (cpuPercent < 80) {
+          cpuStatusEl.textContent = 'Moderate';
+          cpuStatusEl.style.color = '#f39c12';
+        } else {
+          cpuStatusEl.textContent = 'High';
+          cpuStatusEl.style.color = '#e74c3c';
+        }
+      }
+      if (cpuCircle) {
+        cpuCircle.style.background = `conic-gradient(#3498db ${cpuPercent}%, #ecf0f1 ${cpuPercent}%)`;
+      }
+
+      // Memory
+      const memPercent = stats.memory_percent || 0;
+      const memPercentageEl = document.getElementById('memory-percentage');
+      const memUsedEl = document.getElementById('memory-used-value');
+      const memStatusEl = document.getElementById('memory-status');
+      const memCircle = document.getElementById('memory-circle');
+
+      if (memPercentageEl) memPercentageEl.textContent = `${Math.round(memPercent)}%`;
+      if (memUsedEl) memUsedEl.textContent = `${memPercent.toFixed(1)}%`;
+      if (memStatusEl) {
+        if (memPercent < 60) {
+          memStatusEl.textContent = 'Normal';
+          memStatusEl.style.color = '#27ae60';
+        } else if (memPercent < 85) {
+          memStatusEl.textContent = 'Moderate';
+          memStatusEl.style.color = '#f39c12';
+        } else {
+          memStatusEl.textContent = 'High';
+          memStatusEl.style.color = '#e74c3c';
+        }
+      }
+      if (memCircle) {
+        memCircle.style.background = `conic-gradient(#9b59b6 ${memPercent}%, #ecf0f1 ${memPercent}%)`;
+      }
+
+      // Disk
+      const diskPercent = stats.disk_percent || 0;
+      const diskPercentageEl = document.getElementById('disk-percentage');
+      const diskFreeEl = document.getElementById('disk-free-value');
+      const diskStatusEl = document.getElementById('disk-status');
+      const diskCircle = document.getElementById('disk-circle');
+
+      if (diskPercentageEl) diskPercentageEl.textContent = `${Math.round(diskPercent)}%`;
+      if (diskFreeEl && stats.disk_total_gb) {
+        const freeGb = stats.disk_total_gb - stats.disk_used_gb;
+        diskFreeEl.textContent = `${freeGb.toFixed(1)} GB`;
+      }
+      if (diskStatusEl) {
+        if (diskPercent < 70) {
+          diskStatusEl.textContent = 'Normal';
+          diskStatusEl.style.color = '#27ae60';
+        } else if (diskPercent < 90) {
+          diskStatusEl.textContent = 'Warning';
+          diskStatusEl.style.color = '#f39c12';
+        } else {
+          diskStatusEl.textContent = 'Critical';
+          diskStatusEl.style.color = '#e74c3c';
+        }
+      }
+      if (diskCircle) {
+        diskCircle.style.background = `conic-gradient(#e74c3c ${diskPercent}%, #ecf0f1 ${diskPercent}%)`;
+      }
+    }
+
+    // Resource monitor is handled by system.js initResourceMonitor()
+    // (inline scripts injected via innerHTML do not execute in browsers)
+
+    window.addEventListener('beforeunload', function() {
+      if (window.stopResourceMonitor) window.stopResourceMonitor();
+    });
+
+    // Load error logs
+    async function loadErrorLogs() {
+      try {
+        const logs = await AdminApi.apiGet('/admin/logs?limit=50');
+        const tbody = document.getElementById('logs-tbody');
+
+        if (!tbody) return;
+
+        if (logs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5">No logs found</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        logs.forEach(log => {
+          const tr = document.createElement('tr');
+          const levelClass = {
+            'INFO': 'ok',
+            'WARNING': 'warn',
+            'ERROR': 'danger',
+            'CRITICAL': 'danger'
+          }[log.level] || 'secondary';
+
+          const timestamp = new Date(log.timestamp).toLocaleString();
+
+          tr.innerHTML = `
+          <td><span class="badge ${levelClass}">${log.level}</span></td>
+          <td>${timestamp}</td>
+          <td>${log.source}</td>
+          <td>${log.message}</td>
+          <td>
+            ${log.exception ? '<i class="fas fa-exclamation-triangle" title="Has exception"></i>' : ''}
+          </td>
+        `;
+          tbody.appendChild(tr);
+        });
+
+        console.log(`Loaded ${logs.length} error logs`);
+      } catch (error) {
+        console.error('Failed to load error logs:', error);
+      }
+    }
+
+    // Load log stats
+    async function loadLogStats() {
+      try {
+        const stats = await AdminApi.apiGet('/admin/logs/stats');
+
+        const totalEl = document.getElementById('total-logs');
+        const errorEl = document.getElementById('error-logs');
+        const warningEl = document.getElementById('warning-logs');
+
+        if (totalEl) totalEl.textContent = stats.total_logs || 0;
+        if (errorEl) errorEl.textContent = stats.by_level?.ERROR || 0;
+        if (warningEl) warningEl.textContent = stats.by_level?.WARNING || 0;
+
+        console.log('Log stats loaded:', stats);
+      } catch (error) {
+        console.error('Failed to load log stats:', error);
+      }
+    }
+
+    // Initialize when AdminApi is ready
+    function init() {
+      if (typeof AdminApi === 'undefined') {
+        setTimeout(init, 100);
+        return;
+      }
+
+      console.log('🚀 Initializing system page...');
+
+      // Load initial data
+      loadPerformanceStats();
+      loadErrorLogs();
+      loadLogStats();
+
+      // Auto-refresh every 5 seconds
+      refreshInterval = setInterval(() => {
+        loadPerformanceStats();
+        loadLogStats();
+      }, 5000);
+
+      // Refresh logs every 10 seconds
+      setInterval(loadErrorLogs, 10000);
+
+      console.log('System page initialized');
+    }
+
+    // Start initialization
+    init();
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    });
+
+    // Load tokenization data
+    async function loadTokenizationData() {
+      try {
+        const [users, stats] = await Promise.all([
+          AdminApi.apiGet('/admin/tokens/users'),
+          AdminApi.apiGet('/admin/tokens/stats')
+        ]);
+
+        // Update stats
+        document.getElementById('total-tokens-used').textContent = stats.total_tokens_used?.toLocaleString() || '0';
+        document.getElementById('avg-tokens-per-user').textContent = Math.round(stats.avg_usage_percentage) + '%';
+
+        // Update table
+        const tbody = document.getElementById('token-table-tbody');
+        if (!tbody) return;
+
+        if (users.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8">No users found</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        users.forEach(user => {
+          const tr = document.createElement('tr');
+          const usageClass = user.usage_percentage > 90 ? 'danger' : user.usage_percentage > 70 ? 'warn' : 'ok';
+
+          tr.innerHTML = `
+          <td>${user.username}</td>
+          <td>${user.email}</td>
+          <td>${user.max_tokens.toLocaleString()}</td>
+          <td>${user.used_tokens.toLocaleString()}</td>
+          <td><span class="badge ${usageClass}">${user.usage_percentage}%</span></td>
+          <td>${user.period_start ? new Date(user.period_start).toLocaleDateString() : 'N/A'}</td>
+          <td>
+            <button class="btn sm primary" onclick="window.systemPage.resetUserTokens(${user.user_id})">
+              <i class="fas fa-redo"></i> Reset
+            </button>
+          </td>
+        `;
+          tbody.appendChild(tr);
+        });
+
+        console.log(`Loaded ${users.length} user token records`);
+      } catch (error) {
+        console.error('Failed to load tokenization data:', error);
+      }
+    }
+
+    // Reset user tokens
+    async function resetUserTokens(userId) {
+      showConfirm('Reset User Tokens', 'Are you sure you want to reset this user\'s tokens to 0?', async () => {
+        try {
+          await AdminApi.apiPost(`/admin/tokens/user/${userId}/reset`, {});
+          if (window.showToast) {
+            window.showToast('Tokens reset successfully', 'success');
+          }
+          loadTokenizationData();
+        } catch (error) {
+          if (window.showToast) {
+            window.showToast('Failed to reset tokens: ' + error.message, 'error');
+          }
+        }
+      });
+    }
+
+
+
+
+
+    // Expose functions globally for manual refresh
+    window.systemPage = {
+      loadPerformanceStats,
+      loadErrorLogs,
+      loadLogStats,
+      loadTokenizationData,
+      resetUserTokens
+    };
+  })();
+</script>

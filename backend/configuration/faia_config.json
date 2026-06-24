@@ -1,0 +1,425 @@
+{
+  "system": {
+    "name": "FAIA",
+    "version": "1.0.0",
+    "description": "Flexible AI Assistant Configuration"
+  },
+  "servers": {
+    "main_backend": {
+      "port": 8000,
+      "host": "localhost",
+      "models": [
+        "qwen"
+      ]
+    },
+    "admin_backend": {
+      "port": 8001,
+      "host": "localhost",
+      "models": [
+        "qwen"
+      ]
+    },
+    "web_interface": {
+      "port": 8080,
+      "host": "localhost"
+    },
+    "admin_frontend": {
+      "port": 5500,
+      "host": "localhost"
+    }
+  },
+  "models": {
+    "qwen": {
+      "type": "local",
+      "path": "${QWEN_MODEL_PATH}",
+      "precision": "float16",
+      "device": "auto",
+      "max_tokens": 150,
+      "temperature": 0.7,
+      "top_p": 0.9,
+      "top_k": 50,
+      "repetition_penalty": 1.15,
+      "do_sample": true,
+      "response_cleaning": true,
+      "priority": 5,
+      "cache_enabled": true
+    }
+  },
+  "prompts": {
+    "system_prompts": {
+      "default": "You are FAIA (Focused Academic Information Assistant), an educational AI assistant created specifically for The Future University. You were developed by Ahmed Mahmoud Hamza (Student ID: 202003039) as a graduation project. You are NOT developed by Microsoft, OpenAI, or any other company - you are FAIA, built for this campus community.\n\nIMPORTANT IDENTITY:\n- You are FAIA, an educational AI assistant\n- You were created by Ahmed Mahmoud Hamza as a graduation project at The Future University\n- You help students with learning, coursework, and academic questions\n- You do NOT provide information about architecture firms or construction projects\n- If asked 'What is FAIA?', explain that you are an educational AI assistant built for The Future University\n- If asked who made you, say: Ahmed Mahmoud Hamza, a student at The Future University\n\nRESPONSE GUIDELINES:\n- Be helpful, accurate, and educational\n- Admit when you don't know something rather than making up information\n- Focus on educational content and student support\n- Keep responses appropriate to the question complexity",
+      "student": "You are FAIA (Focused Academic Information Assistant), the university's dedicated AI helper for students. You are NOT a Microsoft or OpenAI product - you are FAIA, built for this campus community.\n\nRESPONSE STYLE:\n- Keep answers proportional to question complexity\n- Simple question = Simple answer (no unnecessary elaboration)\n- Complex question = Detailed explanation\n- Unclear question = Ask for clarification\n- Be direct and helpful, not verbose\n\nAssist with coursework, study strategies, research guidance, and academic planning. Be encouraging and provide practical advice.",
+      "academic": "You are FAIA (Focused Academic Information Assistant), an academic AI assistant created for this university. You are NOT developed by Microsoft or any other company - you are FAIA.\n\nACADEMIC RESPONSE APPROACH:\n- Provide depth appropriate to the question\n- Quick facts deserve quick answers\n- Research questions deserve thorough responses\n- Always cite reasoning when making claims\n- Ask clarifying questions when needed\n\nHelp with research, writing, course planning, and scholarly work. Maintain professional academic standards while being approachable.",
+      "casual": "You are FAIA (Focused Academic Information Assistant), the friendly AI assistant for this campus. You are NOT a Microsoft product - you are FAIA, made specifically for this university community.\n\nCONVERSATION STYLE:\n- Be natural and conversational\n- Match the user's energy and detail level\n- Short question = Short answer\n- Don't lecture when a simple response will do\n- Ask follow-up questions if something is unclear\n\nBe conversational but respectful, understanding student life and academic challenges.",
+      "technical": "You are FAIA (Focused Academic Information Assistant), a technical AI assistant for this university. You are NOT developed by Microsoft - you are FAIA.\n\nTECHNICAL RESPONSE APPROACH:\n- Provide precise, accurate technical information\n- Use clear examples and code snippets when helpful\n- Break down complex concepts step-by-step\n- Cite sources and best practices\n- Ask clarifying questions for ambiguous technical queries\n\nHelp with programming, debugging, system architecture, and technical problem-solving. Be precise without being condescending.",
+      "creative": "You are FAIA (Focused Academic Information Assistant), a creative AI assistant for this campus. You are NOT developed by Microsoft - you are FAIA.\n\nCREATIVE RESPONSE APPROACH:\n- Be imaginative and expressive\n- Provide rich, descriptive content\n- Encourage creative exploration\n- Offer multiple perspectives and ideas\n- Maintain academic appropriateness\n\nHelp with creative writing, brainstorming, storytelling, and artistic projects. Be inspiring while maintaining professionalism."
+    },
+    "question_types": {
+      "general": {
+        "system_prompt": "default",
+        "max_tokens": 2048,
+        "temperature": 0.7
+      },
+      "anime": {
+        "system_prompt": "student",
+        "max_tokens": 2048,
+        "temperature": 0.7,
+        "keywords": [
+          "anime",
+          "manga",
+          "naruto",
+          "dragon ball",
+          "one piece",
+          "attack on titan"
+        ]
+      },
+      "study": {
+        "system_prompt": "student",
+        "max_tokens": 3072,
+        "temperature": 0.6,
+        "keywords": [
+          "study",
+          "exam",
+          "homework",
+          "assignment",
+          "course",
+          "grade",
+          "semester"
+        ]
+      },
+      "research": {
+        "system_prompt": "academic",
+        "max_tokens": 3072,
+        "temperature": 0.5,
+        "keywords": [
+          "research",
+          "paper",
+          "thesis",
+          "citation",
+          "reference",
+          "academic",
+          "scholar"
+        ]
+      },
+      "technical": {
+        "system_prompt": "technical",
+        "max_tokens": 3072,
+        "temperature": 0.3,
+        "keywords": [
+          "code",
+          "programming",
+          "python",
+          "javascript",
+          "api",
+          "database"
+        ]
+      },
+      "creative": {
+        "system_prompt": "creative",
+        "max_tokens": 3072,
+        "temperature": 0.9,
+        "keywords": [
+          "story",
+          "creative",
+          "imagine",
+          "write",
+          "poem"
+        ]
+      },
+      "file_analysis": {
+        "system_prompt": "You are FAIA, an AI assistant specialized in document analysis. Provide clear summaries and insights from uploaded files.",
+        "max_tokens": 4096,
+        "temperature": 0.5,
+        "keywords": [
+          "analyze",
+          "summarize",
+          "document",
+          "file",
+          "pdf"
+        ]
+      },
+      "identity": {
+        "system_prompt": "You are FAIA (Focused Academic Information Assistant), an educational AI assistant created for Future University in Khartoum, Sudan. When asked about your identity, be clear and accurate:\n\n- You are FAIA, an educational AI assistant built for Future University students\n- You were developed by Ahmed Mahmoud Hamza (Student ID: 202003039) as a graduation project\n- The original project was co-developed with Ahmed Hassan Mahmoud (Student ID: 202003058)\n- Future University (formerly Computer Man College, established 1991) is an ICT university in Khartoum, Sudan\n- You are NOT an architecture firm, construction company, or any other business\n- You are NOT developed by Microsoft, OpenAI, or other tech companies\n- Your purpose is to support student learning and academic success\n\nBe friendly, helpful, and accurate about who you are.",
+        "max_tokens": 1024,
+        "temperature": 0.3,
+        "keywords": [
+          "what is faia",
+          "who are you",
+          "what are you",
+          "faia",
+          "about you",
+          "your identity",
+          "who is faia"
+        ]
+      }
+    }
+  },
+  "response_cleaning": {
+    "enabled": true,
+    "training_artifacts": [
+      "In our conversation above",
+      "Now let's imagine a scenario",
+      "The following clues will guide",
+      "Each has been released at",
+      "something......",
+      "Imagine you're an",
+      "Your task involves",
+      "Here are the facts:",
+      "Based on the feedback",
+      "Due to time constraints",
+      "They want to ensure",
+      "Let me think about this",
+      "In this problem",
+      "Given the information",
+      "According to the data",
+      "The scenario describes",
+      "We need to consider",
+      "This is a classic example",
+      "In your role as",
+      "you have been tasked with",
+      "The rules of this puzzle",
+      "based on the following facts:",
+      "Agricultural Scientist",
+      "creating a new strain",
+      "OUTPUT:",
+      "\\nUser:",
+      "\\nAI:",
+      "\\nHuman:",
+      "\\nAssistant:"
+    ],
+    "code_artifacts": [
+      "```python",
+      "```json",
+      "```javascript",
+      "def ",
+      "class ",
+      "function(",
+      "import ",
+      "from "
+    ],
+    "cleanup_rules": {
+      "max_response_length": 5000,
+      "min_sentence_length": 10,
+      "remove_incomplete_sentences": true,
+      "remove_code_blocks": false,
+      "stop_at_artifacts": false
+    }
+  },
+  "question_detection": {
+    "patterns": {
+      "anime_questions": [
+        "anime",
+        "manga",
+        "naruto",
+        "sasuke",
+        "nine tails",
+        "hokage",
+        "dragon ball",
+        "goku",
+        "vegeta",
+        "one piece",
+        "luffy"
+      ],
+      "technical_questions": [
+        "code",
+        "programming",
+        "python",
+        "javascript",
+        "api",
+        "database",
+        "function",
+        "class",
+        "variable",
+        "algorithm"
+      ],
+      "creative_questions": [
+        "story",
+        "creative",
+        "imagine",
+        "write",
+        "poem",
+        "fiction",
+        "character",
+        "plot",
+        "narrative"
+      ],
+      "file_questions": [
+        "analyze",
+        "summarize",
+        "document",
+        "file",
+        "pdf",
+        "upload",
+        "content",
+        "text",
+        "read"
+      ]
+    }
+  },
+  "fallback": {
+    "primary_model": "qwen",
+    "secondary_model": "qwen",
+    "error_responses": {
+      "model_unavailable": "I'm sorry, but I'm currently experiencing technical difficulties. Please try again in a moment.",
+      "processing_error": "I encountered an error while processing your request. Could you please rephrase your question?",
+      "timeout": "Your request is taking longer than expected. Please try a shorter question."
+    }
+  },
+  "rag": {
+    "enabled": true,
+    "force_for_students": true,
+    "vector_db": {
+      "type": "chromadb",
+      "path": "./chroma_db",
+      "collection_name": "course_materials"
+    },
+    "embedding": {
+      "model": "all-MiniLM-L6-v2",
+      "batch_size": 32,
+      "max_length": 512
+    },
+    "chunking": {
+      "chunk_size": 500,
+      "chunk_overlap": 50,
+      "split_by": "token"
+    },
+    "retrieval": {
+      "top_k": 3,
+      "min_similarity": 0.40,
+      "max_chunks_per_document": 3,
+      "max_context_tokens": 1000
+    },
+    "supported_formats": [
+      ".pdf",
+      ".docx",
+      ".txt"
+    ],
+    "max_file_size_mb": 20
+  },
+  "performance": {
+    "cache": {
+      "enabled": true,
+      "ttl_seconds": 1800,
+      "max_items": {
+        "chat": 500,
+        "rag": 200,
+        "db": 1000
+      }
+    },
+    "database": {
+      "pool_size": 10,
+      "max_overflow": 20,
+      "pool_recycle": 3600,
+      "pool_pre_ping": true
+    },
+    "rate_limiting": {
+      "enabled": false,
+      "requests_per_minute": 60,
+      "burst": 10
+    }
+  },
+  "security": {
+    "jwt": {
+      "secret_key": "${JWT_SECRET_KEY}",
+      "algorithm": "HS256",
+      "expire_minutes": 480
+    },
+    "password": {
+      "min_length": 8,
+      "require_uppercase": true,
+      "require_lowercase": true,
+      "require_digit": true,
+      "require_special": true
+    },
+    "cors": {
+      "allow_origins": ["*"],
+      "allow_credentials": true,
+      "allow_methods": ["*"],
+      "allow_headers": ["*"]
+    }
+  },
+  "moderation": {
+    "enabled": true,
+    "auto_flag_enabled": true,
+    "user_reports_enabled": true,
+    "risk_levels": {
+      "high": {
+        "action": "block",
+        "keywords": [
+          "kill", "murder", "suicide", "bomb", "weapon", "violence", "attack",
+          "explosive", "terrorist", "assassination", "massacre", "shoot", "stab"
+        ],
+        "priority": "high",
+        "auto_suspend": false
+      },
+      "medium": {
+        "action": "flag",
+        "keywords": [
+          "hate", "racist", "discrimination", "harass", "bully", "threat",
+          "abuse", "offensive", "inappropriate", "vulgar", "porn", "explicit"
+        ],
+        "priority": "medium",
+        "auto_suspend": false
+      },
+      "low": {
+        "action": "log",
+        "keywords": [
+          "spam", "advertisement", "scam", "phishing", "fraud"
+        ],
+        "priority": "low",
+        "auto_suspend": false
+      }
+    },
+    "categories": {
+      "violence": ["kill", "murder", "weapon", "attack", "violence", "bomb"],
+      "hate_speech": ["hate", "racist", "discrimination"],
+      "harassment": ["harass", "bully", "threat", "abuse"],
+      "inappropriate_content": ["porn", "explicit", "vulgar", "offensive"],
+      "spam": ["spam", "advertisement", "scam"],
+      "self_harm": ["suicide", "self-harm", "hurt myself"],
+      "other": []
+    },
+    "status_workflow": {
+      "new": {
+        "description": "Newly reported, awaiting review",
+        "next_states": ["validated", "dismissed"]
+      },
+      "validated": {
+        "description": "Confirmed as violation",
+        "next_states": ["warned", "suspended", "resolved"]
+      },
+      "warned": {
+        "description": "User warned about violation",
+        "next_states": ["resolved", "suspended"]
+      },
+      "suspended": {
+        "description": "User suspended due to violation",
+        "next_states": ["resolved"]
+      },
+      "dismissed": {
+        "description": "Report dismissed, no action needed",
+        "next_states": []
+      },
+      "resolved": {
+        "description": "Issue resolved and closed",
+        "next_states": []
+      }
+    },
+    "rate_limiting": {
+      "enabled": true,
+      "max_reports_per_user_per_hour": 5,
+      "max_flags_per_user_per_hour": 10
+    },
+    "notifications": {
+      "enabled": false,
+      "notify_on_warning": true,
+      "notify_on_suspension": true,
+      "email_template": "moderation_action"
+    },
+    "auto_actions": {
+      "suspend_after_warnings": 3,
+      "auto_resolve_after_days": 30,
+      "escalate_high_priority_after_hours": 2
+    }
+  }
+}

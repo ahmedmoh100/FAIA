@@ -1,0 +1,118 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment & Security
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Logs & Temporary Files
+logs/
+*.log
+*.tmp
+temp/
+temporary/
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+database_backups/
+backup_*.zip
+backup_*.sql
+
+# Cache & Storage
+chroma_db/
+__pycache__/
+.cache/
+cache/
+
+# User Uploads (keep structure, ignore content)
+uploads/*
+!uploads/.gitkeep
+backend/services/uploads/*
+!backend/services/uploads/.gitkeep
+
+# Model Files (large files, should be downloaded separately)
+models/
+*.bin
+*.pt
+*.pth
+phi2/
+D:/phi2
+
+# Android
+local.properties
+faia-android/.gradle/
+faia-android/app/build/
+*.keystore
+*.jks
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Production & Deployment
+*.pid
+*.seed
+*.pid.lock
+.npm
+.node_repl_history
+coverage/
+.nyc_output
+
+# Error & Debug Files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+error_monitor.db
+*.error
+
+# OS Generated Files
+*.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+*.lnk
+
+# Backup & Archive Files
+*.bak
+*.backup
+*.old
+*.orig
+*.save
+*.swp
+*.swo
+*~

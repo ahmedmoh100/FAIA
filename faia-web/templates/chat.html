@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAIA - Your AI Assistant</title>
+    <link rel="icon" type="image/png"
+        href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAUVBMVEUAAABERERJSUlMTExQUFBYWFhbW1tdXV1eXl5gYGBkZGRsbGx0dHR3d3d7e3t/f3+AgICFhYWKiopxcXGioqKnp6euLi5+fn6CgoKKior///8vLy9OTk5aWlo7Ozt0dHR3U9b8AAAAGnRSTlMAAQIDBAgKEhYXGRwhJygxQUNUWmBpb3eI3f5r1d0AAABUSURBVBjTVc5HDoAgDETRoZb2/3+zE0o0F3o6m2Q2Q2g0rQxw9oZ7fYgQwqPq0KQmVw3mI06b0g3m0m3g2Q8IY6m0y8ZrK1Evrgq2c8Gk9k7s7l3o4b2zJrDqgkK2yT0v8C8r4Uj3c4b4QAAAABJRU5ErkJggg==" />
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- App Bar -->
+        <header class="app-bar">
+            <div class="app-bar-content">
+                <div class="logo-container">
+                    <img src="/static/images/faia-logo.png" alt="FAIA" class="logo-image" id="logoImage"
+                        onerror="this.style.display='none'">
+                    <span class="logo-text">FAIA</span>
+                </div>
+                <button class="menu-button" id="menuButton">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Guest Warning Banner -->
+            <div id="guestBanner"
+                style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 20px; text-align: center; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <i class="fas fa-info-circle"></i>
+                <strong>Guest Mode:</strong> Your chats are not saved.
+                <a href="#" id="guestRegisterLink"
+                    style="color: #ffd700; text-decoration: underline; margin-left: 8px;">Register now</a> to save your
+                conversations!
+            </div>
+
+            <!-- Welcome Screen -->
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-content">
+                    <img src="/static/images/faia-logo.png" alt="FAIA" class="welcome-logo" id="welcomeLogo"
+                        onerror="this.style.display='none'">
+                    <h1 class="welcome-title">Welcome to FAIA</h1>
+                    <p class="welcome-subtitle">Your AI Assistant</p>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chatMessages" style="display: none;">
+                <!-- Messages will be added here dynamically -->
+            </div>
+
+            <!-- File Preview Area -->
+            <div class="file-preview-container" id="filePreviewContainer" style="display: none;">
+                <div class="file-preview-content">
+                    <div class="file-info">
+                        <i class="fas fa-file-pdf file-icon" id="fileIcon"></i>
+                        <div class="file-details">
+                            <span class="file-name" id="fileName">document.pdf</span>
+                            <span class="file-size" id="fileSize">2.5 MB</span>
+                        </div>
+                        <div class="file-status">
+                            <span class="processing-indicator" id="processingIndicator">
+                                <i class="fas fa-spinner fa-spin"></i> Processing...
+                            </span>
+                            <span class="ready-indicator" id="readyIndicator" style="display: none;">
+                                <i class="fas fa-check-circle"></i> Ready
+                            </span>
+                        </div>
+                    </div>
+                    <button class="remove-file-button" id="removeFileButton" title="Remove file">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <div class="input-wrapper">
+                    <input type="text" id="messageInput" placeholder="Type your message..." class="message-input" autocomplete="off">
+                    <button class="attach-button" id="attachButton">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <button class="rag-toggle-button" id="ragToggleButton"
+                        title="Toggle RAG (Retrieval Augmented Generation)">
+                        <i class="fas fa-brain"></i>
+                    </button>
+                    <button class="send-button" id="sendButton">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Side Drawer -->
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+        <div class="drawer" id="drawer">
+            <div class="drawer-header">
+                <h2>Menu</h2>
+                <button class="drawer-close" id="drawerClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="drawer-content">
+                <!-- User Info Section -->
+                <div class="drawer-section">
+                    <div class="drawer-item user-info">
+                        <i class="fas fa-user"></i>
+                        <span id="userDisplay">Guest User</span>
+                    </div>
+                    <!-- Token Usage Display (Only for logged-in users) -->
+                    <div class="drawer-item token-info" id="tokenInfo" style="display: none;">
+                        <i class="fas fa-coins"></i>
+                        <div class="token-details">
+                            <div class="token-usage">
+                                <span id="tokenUsage">0 / 100,000</span>
+                                <span class="token-label">Tokens Used</span>
+                            </div>
+                            <div class="token-bar">
+                                <div class="token-progress" id="tokenProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="drawer-divider"></div>
+
+                <!-- Chat Sessions Section (Only for logged-in users) -->
+                <div class="drawer-section" id="sessionsSection" style="display: none;">
+                    <div class="sessions-header-container">
+                        <div class="drawer-item sessions-header">
+                            <i class="fas fa-comments"></i>
+                            <span>Chat Sessions</span>
+                        </div>
+                        <button class="new-chat-button" id="newChatButton" title="New Chat">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <!-- Search Chat Field -->
+                    <div class="search-chat-container">
+                        <input type="text" id="searchChatInput" placeholder="Search chats..." class="search-chat-input" autocomplete="off">
+                        <i class="fas fa-search search-chat-icon"></i>
+                    </div>
+                    <div id="sessionsList" class="sessions-list">
+                        <!-- Sessions will be added here dynamically -->
+                    </div>
+                </div>
+                <div class="drawer-divider"></div>
+
+                <!-- Auth Section (Guest only) -->
+                <div class="drawer-section" id="guestAuthSection">
+                    <button class="drawer-item" id="loginButton">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </button>
+                    <button class="drawer-item" id="registerButton">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Register</span>
+                    </button>
+                </div>
+
+                <!-- Settings Section -->
+                <div class="drawer-section">
+                    <button class="drawer-item" id="settingsButton">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Modal -->
+        <div class="modal-overlay" id="loginModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>Login</h2>
+                    <button class="modal-close" id="loginModalClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginUsername">Username</label>
+                            <input type="text" id="loginUsername" required autocomplete="username">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" required autocomplete="current-password">
+                        </div>
+                        <div class="form-group" style="text-align: right;">
+                            <a href="#" id="forgotPasswordLink"
+                                style="color: var(--accent); text-decoration: none; font-size: 0.9em;">Forgot
+                                Password?</a>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Modal -->
+        <div class="modal-overlay" id="registerModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>Register</h2>
+                    <button class="modal-close" id="registerModalClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label for="registerUsername">Username</label>
+                            <input type="text" id="registerUsername" required autocomplete="username">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword">Password</label>
+                            <input type="password" id="registerPassword" required autocomplete="new-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerConfirmPassword">Confirm Password</label>
+                            <input type="password" id="registerConfirmPassword" required autocomplete="new-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail">Email</label>
+                            <input type="email" id="registerEmail" required placeholder="Enter your email" autocomplete="email">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Input (Hidden) -->
+        <input type="file" id="fileInput" style="display: none;" accept=".pdf,.txt,.doc,.docx,.jpg,.jpeg,.png">
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Processing...</p>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast">
+            <div class="toast-content">
+                <i class="fas fa-info-circle" id="toastIcon"></i>
+                <span id="toastMessage"></span>
+                <button class="toast-close" id="toastClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Change Password Modal -->
+        <div class="modal-overlay" id="changePasswordModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>Change Password</h2>
+                    <button class="modal-close" id="changePasswordModalClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <form id="changePasswordForm">
+                        <input type="text" id="changePasswordUsername" autocomplete="username" style="display:none;" aria-hidden="true">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" placeholder="Enter current password" required autocomplete="current-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" placeholder="Enter new password (min 6 characters)"
+                                required minlength="6" autocomplete="new-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmNewPassword">Confirm New Password</label>
+                            <input type="password" id="confirmNewPassword" placeholder="Confirm new password" required autocomplete="new-password">
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" id="changePasswordCancel">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Change Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forgot Password Modal -->
+        <div class="modal-overlay" id="forgotPasswordModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>Forgot Password</h2>
+                    <button class="modal-close" id="forgotPasswordModalClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                        Enter your email address and we'll send you a link to reset your password.
+                    </p>
+                    <form id="forgotPasswordForm">
+                        <div class="form-group">
+                            <label for="forgotEmail">Email Address</label>
+                            <input type="email" id="forgotEmail" placeholder="Enter your email" required autocomplete="email">
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" id="forgotPasswordCancel">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Send Reset Link</button>
+                        </div>
+                    </form>
+                    <div id="forgotPasswordSuccess"
+                        style="display: none; margin-top: 1rem; padding: 1rem; background: var(--success-bg); border-radius: 8px; color: var(--success);">
+                        <i class="fas fa-check-circle"></i> Request received. An administrator will reset your password and contact you shortly.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reset Password Modal -->
+        <div class="modal-overlay" id="resetPasswordModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>Reset Password</h2>
+                    <button class="modal-close" id="resetPasswordModalClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <form id="resetPasswordForm">
+                        <input type="hidden" id="resetToken">
+                        <input type="text" id="resetPasswordUsername" autocomplete="username" style="display:none;" aria-hidden="true">
+                        <div class="form-group">
+                            <label for="resetNewPassword">New Password</label>
+                            <input type="password" id="resetNewPassword"
+                                placeholder="Enter new password (min 6 characters)" required minlength="6" autocomplete="new-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="resetConfirmPassword">Confirm Password</label>
+                            <input type="password" id="resetConfirmPassword" placeholder="Confirm new password"
+                                required autocomplete="new-password">
+                        </div>
+                        <div class="modal-actions">
+                            <button type="submit" class="btn btn-primary">Reset Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Dialog -->
+        <div class="confirm-dialog-overlay" id="confirmDialog">
+            <div class="confirm-dialog">
+                <div class="confirm-dialog-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h3 id="confirmTitle">Confirm Action</h3>
+                <p id="confirmMessage">Are you sure you want to proceed?</p>
+                <div class="confirm-dialog-buttons">
+                    <button class="btn btn-secondary" id="confirmCancel">Cancel</button>
+                    <button class="btn btn-primary" id="confirmOk">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rename Session Modal -->
+        <div class="modal-overlay" id="renameModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>Rename Chat</h2>
+                    <button class="modal-close" id="renameModalClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <div class="form-group">
+                        <label for="renameInput">Chat Name</label>
+                        <input type="text" id="renameInput" placeholder="Enter chat name..." maxlength="50" autocomplete="off">
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" id="renameCancel">Cancel</button>
+                        <button class="btn btn-primary" id="renameSave">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal-overlay" id="settingsModal">
+            <div class="modal settings-modal">
+                <div class="modal-header">
+                    <h2><i class="fas fa-cog"></i> Settings</h2>
+                    <button class="modal-close" id="settingsModalClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <!-- Appearance Section -->
+                    <div class="settings-section">
+                        <h3><i class="fas fa-palette"></i> Appearance</h3>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <span class="settings-label">Theme</span>
+                                <span class="settings-description">Choose your preferred theme</span>
+                            </div>
+                            <button class="settings-toggle" id="themeToggleButton">
+                                <i class="fas fa-moon" id="themeIcon"></i>
+                                <span id="themeText">Dark Mode</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Account Section (Logged-in users only) -->
+                    <div class="settings-section" id="accountSection" style="display: none;">
+                        <h3><i class="fas fa-user"></i> Account</h3>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <span class="settings-label">Password</span>
+                                <span class="settings-description">Change your account password</span>
+                            </div>
+                            <button class="btn btn-secondary" id="changePasswordButton">
+                                <i class="fas fa-key"></i> Change Password
+                            </button>
+                        </div>
+
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <span class="settings-label">Sign Out</span>
+                                <span class="settings-description">Log out of your account</span>
+                            </div>
+                            <button class="btn btn-secondary" id="logoutButton">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Guest Section -->
+                    <div class="settings-section" id="guestSection">
+                        <h3><i class="fas fa-user-circle"></i> Account</h3>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <span class="settings-label">Create Account</span>
+                                <span class="settings-description">Sign up to save your conversations</span>
+                            </div>
+                            <button class="btn btn-primary" id="settingsRegisterButton">
+                                <i class="fas fa-user-plus"></i> Register
+                            </button>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <span class="settings-label">Sign In</span>
+                                <span class="settings-description">Access your existing account</span>
+                            </div>
+                            <button class="btn btn-secondary" id="settingsLoginButton">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/chat.js?v={{ timestamp }}"></script>
+</body>
+
+</html>

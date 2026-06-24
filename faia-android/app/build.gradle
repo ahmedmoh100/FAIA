@@ -1,0 +1,43 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.faiareactnative'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.faiareactnative"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    // To create a signed release APK:
+    // 1. Generate a keystore: keytool -genkey -v -keystore faia-release.keystore -alias faia -keyalg RSA -keysize 2048 -validity 10000
+    // 2. Add a signingConfigs block here with your keystore path and passwords
+    // 3. Reference it in buildTypes.release with: signingConfig signingConfigs.release
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
+}

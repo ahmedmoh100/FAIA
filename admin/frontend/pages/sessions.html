@@ -1,0 +1,529 @@
+<div class="page-container sessions-container">
+  <!-- Sessions Header -->
+  <div class="page-header">
+    <h2><i class="fas fa-clock"></i> Session Management</h2>
+    <p class="page-subtitle">Monitor user sessions, activity, and login patterns</p>
+    <div class="page-info">
+      <p><strong>How it works:</strong> Track user login sessions, monitor active users, and analyze session patterns. View detailed session information including login times, duration, IP addresses, and current activity status.</p>
+    </div>
+  </div>
+
+  <!-- Sessions Stats -->
+  <div class="sessions-stats">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-content">
+        <h3 id="activeSessions">0</h3>
+        <p>Active Sessions</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-history"></i>
+      </div>
+      <div class="stat-content">
+        <h3 id="totalSessions">0</h3>
+        <p>Total Sessions</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="stat-content">
+        <h3 id="avgDuration">0m</h3>
+        <p>Avg Duration</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="stat-content">
+        <h3 id="todaySessions">0</h3>
+        <p>Today's Sessions</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sessions Controls -->
+  <div class="sessions-controls">
+    <div class="control-group">
+      <label for="s_q">Search Sessions:</label>
+      <input id="s_q" class="input" placeholder="Search by username, IP, or session ID" />
+    </div>
+    <div class="control-group">
+      <label for="s_status">Filter by Status:</label>
+      <select id="s_status" class="input">
+        <option value="">All Sessions</option>
+        <option value="active">Active Only</option>
+        <option value="completed">Completed Only</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="s_sort">Sort By:</label>
+      <select id="s_sort" class="input">
+        <option value="login_time">Login Time</option>
+        <option value="username">Username</option>
+        <option value="last_activity">Last Activity</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="s_order">Order:</label>
+      <select id="s_order" class="input">
+        <option value="desc">Newest First (Desc)</option>
+        <option value="asc">Oldest First (Asc)</option>
+      </select>
+    </div>
+    <div class="control-actions">
+      <button id="s_search" class="btn secondary">
+        <i class="fas fa-search"></i> Search
+      </button>
+      <button id="s_refresh" class="btn primary">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+      <button id="s_export" class="btn success">
+        <i class="fas fa-download"></i> Export CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Sessions Table -->
+  <div class="sessions-table-container">
+    <div class="table-header">
+      <h3><i class="fas fa-list"></i> User Sessions</h3>
+      <div class="table-actions">
+        <button id="terminateAllSessions" class="btn danger">
+          <i class="fas fa-power-off"></i> Terminate All Active
+        </button>
+      </div>
+    </div>
+    <div class="table-wrapper">
+      <table class="table sessions-table">
+        <thead>
+          <tr>
+            <th>Session ID</th>
+            <th>User</th>
+            <th>Login Time</th>
+            <th>Duration</th>
+            <th>Status</th>
+            <th>IP Address</th>
+            <th>Current Chat</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="s_tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Session Details Modal -->
+<div id="sessionDetailsModal" class="modal" style="display:none;">
+  <div class="modal-content large">
+    <div class="modal-header">
+      <h3><i class="fas fa-info-circle"></i> Session Details</h3>
+      <span class="close" id="closeSessionDetails">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="session-details-grid">
+        <div class="detail-section">
+          <h4>Session Information</h4>
+          <div class="detail-item">
+            <label>Session ID:</label>
+            <span id="detail_session_id">-</span>
+          </div>
+          <div class="detail-item">
+            <label>Status:</label>
+            <span id="detail_status" class="badge">-</span>
+          </div>
+          <div class="detail-item">
+            <label>Login Time:</label>
+            <span id="detail_login_time">-</span>
+          </div>
+          <div class="detail-item">
+            <label>Logout Time:</label>
+            <span id="detail_logout_time">-</span>
+          </div>
+          <div class="detail-item">
+            <label>Duration:</label>
+            <span id="detail_duration">-</span>
+          </div>
+          <div class="detail-item">
+            <label>Last Activity:</label>
+            <span id="detail_last_activity">-</span>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h4>User Information</h4>
+          <div class="detail-item">
+            <label>Username:</label>
+            <span id="detail_username">-</span>
+          </div>
+          <div class="detail-item">
+            <label>Email:</label>
+            <span id="detail_email">-</span>
+          </div>
+          <div class="detail-item">
+            <label>Role:</label>
+            <span id="detail_role" class="badge">-</span>
+          </div>
+          <div class="detail-item">
+            <label>User Status:</label>
+            <span id="detail_user_status" class="badge">-</span>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h4>Technical Details</h4>
+          <div class="detail-item">
+            <label>IP Address:</label>
+            <span id="detail_ip_address">-</span>
+          </div>
+          <div class="detail-item">
+            <label>Current Chat:</label>
+            <span id="detail_current_chat">-</span>
+          </div>
+          <div class="detail-item">
+            <label>Chat Title:</label>
+            <span id="detail_chat_title">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn" id="closeSessionDetailsBtn">Close</button>
+      <button type="button" class="btn danger" id="terminateSessionBtn">
+        <i class="fas fa-power-off"></i> Terminate Session
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+console.log('Sessions page HTML loaded, script starting...');
+
+// Define the global initialization function that the router expects
+window.initSessionsPage = function() {
+  console.log('initSessionsPage called by router');
+  
+  // Router already ensures AdminApi is available, no need to wait
+  console.log('AdminApi object:', AdminApi);
+  console.log('API_BASE:', AdminApi.API_BASE);
+    
+    const q = document.getElementById('s_q');
+    const status = document.getElementById('s_status');
+    const tbody = document.getElementById('s_tbody');
+    
+    // Modal elements
+    const modal = document.getElementById('sessionDetailsModal');
+    const closeBtn = document.getElementById('closeSessionDetails');
+    const closeBtn2 = document.getElementById('closeSessionDetailsBtn');
+    const terminateBtn = document.getElementById('terminateSessionBtn');
+    
+    let currentSessionId = null;
+
+    // Search functionality
+    document.getElementById('s_search').onclick = load;
+    document.getElementById('s_refresh').onclick = load;
+    
+    // Sort controls - reload when changed
+    document.getElementById('s_sort').onchange = load;
+    document.getElementById('s_order').onchange = load;
+    document.getElementById('s_status').onchange = load;
+    
+    // Export functionality
+    document.getElementById('s_export').onclick = async function() {
+      try {
+        // Use apiGetText for CSV download
+        const csvData = await AdminApi.apiGetText('/admin/sessions/export?format=csv', true, 'Exporting sessions...');
+        const blob = new Blob([csvData], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `sessions_export_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        if (window.showToast) {
+          window.showToast('Sessions exported successfully!', 'success');
+        }
+      } catch(e) {
+        console.error('Export error:', e);
+        if (window.showToast) {
+          window.showToast('Export failed: ' + e.message, 'error');
+        } else {
+          alert('Export failed: ' + e.message);
+        }
+      }
+    };
+    
+    // Terminate all sessions
+    document.getElementById('terminateAllSessions').onclick = async function() {
+      showConfirm('Terminate All Sessions', 'Are you sure you want to terminate all active sessions? This will log out all users.', async () => {
+        try {
+          await AdminApi.apiPost('/admin/sessions/terminate-all', {}, true, 'Terminating all sessions...');
+          if (window.showToast) {
+            window.showToast('All active sessions terminated', 'success');
+          } else {
+            alert('All active sessions terminated');
+          }
+          load(); // Refresh the table
+        } catch(e) {
+          console.error('Terminate all error:', e);
+          if (window.showToast) {
+            window.showToast('Failed to terminate sessions: ' + e.message, 'error');
+          } else {
+            alert('Failed to terminate sessions: ' + e.message);
+          }
+        }
+      });
+    };
+
+    // Close modal
+    closeBtn.onclick = function() {
+      modal.style.display = 'none';
+    };
+    closeBtn2.onclick = function() {
+      modal.style.display = 'none';
+    };
+    
+    // Terminate single session
+    terminateBtn.onclick = async function() {
+      if (!currentSessionId) return;
+      if (!confirm('Are you sure you want to terminate this session?')) return;
+      
+      try {
+        await AdminApi.apiPost(`/admin/sessions/${currentSessionId}/terminate`, {}, true, 'Terminating session...');
+        if (window.showToast) {
+          window.showToast('Session terminated successfully', 'success');
+        } else {
+          alert('Session terminated successfully');
+        }
+        modal.style.display = 'none';
+        load(); // Refresh the table
+      } catch(e) {
+        console.error('Terminate session error:', e);
+        if (window.showToast) {
+          window.showToast('Failed to terminate session: ' + e.message, 'error');
+        } else {
+          alert('Failed to terminate session: ' + e.message);
+        }
+      }
+    };
+    
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    };
+
+    // Helper functions
+    function formatDuration(loginTime, logoutTime) {
+      if (!loginTime) return '-';
+      
+      const start = new Date(loginTime * 1000);
+      const end = logoutTime ? new Date(logoutTime * 1000) : new Date();
+      const diff = Math.floor((end - start) / 1000 / 60); // minutes
+      
+      if (diff < 60) return `${diff}m`;
+      const hours = Math.floor(diff / 60);
+      const minutes = diff % 60;
+      return `${hours}h ${minutes}m`;
+    }
+    
+    function formatDateTime(timestamp) {
+      if (!timestamp) return '-';
+      return new Date(timestamp * 1000).toLocaleString();
+    }
+    
+    function getStatusBadge(session) {
+      // Use is_active field from backend (true if not logged out)
+      if (session.is_active || !session.logout_time) {
+        return '<span class="badge ok"><i class="fas fa-circle"></i> Active</span>';
+      }
+      return '<span class="badge secondary"><i class="fas fa-check-circle"></i> Completed</span>';
+    }
+    
+    function updateStats(sessions) {
+      const activeSessions = sessions.filter(s => !s.logout_time).length;
+      const totalSessions = sessions.length;
+      
+      // Calculate average duration for completed sessions
+      const completedSessions = sessions.filter(s => s.logout_time && s.duration_minutes);
+      let avgDuration = 0;
+      if (completedSessions.length > 0) {
+        const totalDuration = completedSessions.reduce((sum, s) => {
+          // Use duration_minutes from backend if available
+          const duration = s.duration_minutes || 0;
+          return sum + duration;
+        }, 0);
+        avgDuration = Math.round(totalDuration / completedSessions.length);
+      }
+      
+      // Count today's sessions
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayTimestamp = today.getTime() / 1000;
+      const todaySessions = sessions.filter(s => {
+        // Handle both Date objects and Unix timestamps
+        const loginTime = s.login_time instanceof Date ? s.login_time.getTime() / 1000 : s.login_time;
+        return loginTime >= todayTimestamp;
+      }).length;
+      
+      document.getElementById('activeSessions').textContent = activeSessions;
+      document.getElementById('totalSessions').textContent = totalSessions;
+      document.getElementById('avgDuration').textContent = avgDuration > 0 ? `${avgDuration}m` : '0m';
+      document.getElementById('todaySessions').textContent = todaySessions;
+    }
+
+    // Load sessions function
+    async function load(){
+      console.log('Loading sessions...');
+      console.log('AdminApi available:', typeof AdminApi !== 'undefined');
+      console.log('API_BASE:', AdminApi ? AdminApi.API_BASE : 'undefined');
+      
+      // Show loading skeleton in table
+      tbody.innerHTML = `
+        <tr class="table-loading-row">
+          <td><div class="loading-placeholder short"></div></td>
+          <td><div class="loading-placeholder medium"></div></td>
+          <td><div class="loading-placeholder long"></div></td>
+          <td><div class="loading-placeholder short"></div></td>
+          <td><div class="loading-placeholder short"></div></td>
+          <td><div class="loading-placeholder medium"></div></td>
+          <td><div class="loading-placeholder medium"></div></td>
+          <td><div class="loading-placeholder medium"></div></td>
+        </tr>
+      `.repeat(5);
+      
+      try {
+        const query = new URLSearchParams();
+        if (q.value) query.append('q', q.value);
+        if (status.value) query.append('status', status.value);
+        
+        // Add sorting parameters
+        const sortBy = document.getElementById('s_sort').value || 'login_time';
+        const sortOrder = document.getElementById('s_order').value || 'desc';
+        query.append('order_by', sortBy);
+        query.append('order', sortOrder);
+        
+        const queryString = query.toString() ? '?' + query.toString() : '';
+        console.log('Making API call to:', '/admin/sessions' + queryString);
+        const data = await AdminApi.apiGet('/admin/sessions' + queryString, true, 'Loading sessions...');
+        
+        console.log('Sessions data received:', data);
+        console.log('Number of sessions:', data.length);
+        
+        tbody.innerHTML = '';
+        updateStats(data);
+        
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><div class="empty-content"><i class="fas fa-clock"></i><p>No sessions found</p><small>Try adjusting your search criteria</small></div></td></tr>';
+          return;
+        }
+        
+        for(const session of data){
+          const tr = document.createElement('tr');
+          const statusBadge = getStatusBadge(session);
+          const duration = formatDuration(session.login_time, session.logout_time);
+          
+          // Ensure we have username and email
+          const displayUsername = session.username || `User ${session.user_id}`;
+          const displayEmail = session.email || `user${session.user_id}@system`;
+          
+          tr.innerHTML = `
+            <td>#${session.session_id}</td>
+            <td>
+              <div class="user-info">
+                <strong>${displayUsername}</strong>
+                <small>${displayEmail}</small>
+              </div>
+            </td>
+            <td>${formatDateTime(session.login_time)}</td>
+            <td>${duration}</td>
+            <td>${statusBadge}</td>
+            <td>${session.ip_address || '-'}</td>
+            <td>${session.current_chat_id ? '#' + session.current_chat_id : '-'}</td>
+            <td>
+              <button class="btn sm primary" data-act="details"><i class="fas fa-info-circle"></i> Details</button>
+              ${!session.logout_time ? '<button class="btn sm danger" data-act="terminate"><i class="fas fa-power-off"></i> Terminate</button>' : ''}
+            </td>
+          `;
+          
+          // Add event listeners for action buttons
+          tr.querySelector('[data-act="details"]').onclick = () => {
+            showSessionDetails(session);
+          };
+          
+          const terminateBtn = tr.querySelector('[data-act="terminate"]');
+          if (terminateBtn) {
+            terminateBtn.onclick = async () => {
+              if (!confirm('Terminate this session?')) return;
+              try {
+                await AdminApi.apiPost(`/admin/sessions/${session.session_id}/terminate`, {}, true, 'Terminating session...');
+                if (window.showToast) {
+                  window.showToast('Session terminated successfully', 'success');
+                } else {
+                  alert('Session terminated');
+                }
+                load();
+              } catch(e) {
+                if (window.showToast) {
+                  window.showToast('Error: ' + e.message, 'error');
+                } else {
+                  alert(e.message);
+                }
+              }
+            };
+          }
+          
+          tbody.appendChild(tr);
+        }
+      } catch(e){ 
+        console.error('Error loading sessions:', e);
+        tbody.innerHTML = `<tr><td colspan="8">Error: ${e.message}</td></tr>`; 
+      }
+    }
+    
+    function showSessionDetails(session) {
+      currentSessionId = session.session_id;
+      
+      document.getElementById('detail_session_id').textContent = session.session_id;
+      document.getElementById('detail_status').textContent = session.logout_time ? 'Completed' : 'Active';
+      document.getElementById('detail_status').className = `badge ${session.logout_time ? 'secondary' : 'ok'}`;
+      document.getElementById('detail_login_time').textContent = formatDateTime(session.login_time);
+      document.getElementById('detail_logout_time').textContent = formatDateTime(session.logout_time);
+      document.getElementById('detail_duration').textContent = formatDuration(session.login_time, session.logout_time);
+      document.getElementById('detail_last_activity').textContent = formatDateTime(session.last_activity);
+      
+      document.getElementById('detail_username').textContent = session.username || 'Unknown';
+      document.getElementById('detail_email').textContent = session.email || '-';
+      document.getElementById('detail_role').textContent = session.role || '-';
+      document.getElementById('detail_role').className = `badge ${session.role === 'ADMIN' ? 'danger' : session.role === 'PROFESSOR' ? 'warn' : 'secondary'}`;
+      document.getElementById('detail_user_status').textContent = session.user_status || '-';
+      document.getElementById('detail_user_status').className = `badge ${session.user_status === 'ACTIVE' ? 'ok' : 'warn'}`;
+      
+      document.getElementById('detail_ip_address').textContent = session.ip_address || '-';
+      document.getElementById('detail_current_chat').textContent = session.current_chat_id ? `#${session.current_chat_id}` : '-';
+      document.getElementById('detail_chat_title').textContent = session.chat_title || '-';
+      
+      // Hide terminate button for completed sessions
+      terminateBtn.style.display = session.logout_time ? 'none' : 'inline-block';
+      
+      modal.style.display = 'block';
+    }
+
+  // Load sessions on page load
+  console.log('Initializing sessions page...');
+  load();
+};
+
+console.log('Sessions page script loaded');
+</script>

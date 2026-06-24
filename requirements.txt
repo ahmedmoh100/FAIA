@@ -1,0 +1,49 @@
+# FAIA — Full System Requirements
+# Python 3.12 | Versions pulled from working environment
+#
+# Install: pip install -r requirements.txt
+#
+# Note: torch can be large (2-3GB). If you have a GPU, visit
+# https://pytorch.org/get-started/locally/ for the CUDA-specific install command.
+
+# ── Core API ──────────────────────────────────────────────
+fastapi==0.136.3
+uvicorn==0.49.0
+pydantic==2.12.5
+python-multipart==0.0.32
+requests==2.34.2
+python-dotenv==1.2.2
+Jinja2==3.1.4
+
+# ── Database ──────────────────────────────────────────────
+SQLAlchemy==2.0.51
+PyMySQL==1.1.1
+cryptography==49.0.0
+
+# ── Auth ──────────────────────────────────────────────────
+PyJWT==2.13.0
+passlib==1.7.4
+python-jose==3.4.0
+bcrypt==5.0.0
+
+# ── AI Model ──────────────────────────────────────────────
+transformers==5.12.1
+torch==2.6.0
+accelerate==1.4.0
+
+# ── RAG System ────────────────────────────────────────────
+sentence-transformers==5.1.2
+chromadb==1.1.1
+tiktoken==0.7.0
+
+# ── Document Processing ───────────────────────────────────
+PyPDF2==3.0.1
+python-docx==1.1.2
+numpy==2.4.6
+pandas==2.2.3
+openpyxl==3.1.5
+Pillow==11.1.0
+
+# ── Monitoring / Async ────────────────────────────────────
+aiohttp==3.14.1
+psutil==5.9.8

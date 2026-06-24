@@ -1,0 +1,284 @@
+<div class="page-container audit-container">
+  <!-- Audit Header -->
+  <div class="page-header">
+    <h2><i class="fas fa-list"></i> Audit Trail</h2>
+    <p class="page-subtitle">Monitor system activity and track administrative actions</p>
+    <div class="page-info">
+      <p><strong>How it works:</strong> View a comprehensive log of all system activities including user actions, administrative changes, and system events. Export audit data for compliance and security analysis.</p>
+    </div>
+  </div>
+
+  <!-- Audit Controls -->
+  <div class="audit-controls">
+    <div class="control-group">
+      <label for="a_q">Search Audit Logs:</label>
+      <input id="a_q" class="input" placeholder="Search by username (e.g., john, mary)" />
+    </div>
+    <div class="control-actions">
+      <button id="a_search" class="btn secondary">
+        <i class="fas fa-search"></i> Search
+      </button>
+      <button id="a_refresh" class="btn secondary">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+      <button id="a_export_csv" class="btn success">
+        <i class="fas fa-download"></i> Export CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Audit Table -->
+  <div class="audit-table-container">
+    <div class="table-header">
+      <h3><i class="fas fa-clipboard-list"></i> Activity Log</h3>
+    </div>
+    <div class="table-wrapper">
+      <table class="table audit-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Actor</th>
+            <th>Action</th>
+            <th>Target</th>
+          </tr>
+        </thead>
+        <tbody id="a_tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+<style>
+/* Audit Controls Styling */
+.audit-controls {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.audit-controls .control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 200px;
+  flex: 1;
+}
+
+.audit-controls .control-group label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.audit-controls .input {
+  background: var(--card) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border);
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.audit-controls .input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+.audit-controls .input option {
+  background: var(--card);
+  color: var(--text);
+}
+
+.audit-controls .control-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.audit-controls .control-actions .btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audit-table-container {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+.table-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .audit-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .audit-controls .control-group {
+    min-width: auto;
+  }
+  
+  .audit-controls .control-actions {
+    justify-content: stretch;
+  }
+  
+  .audit-controls .control-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+</style>
+
+<script>
+  (function(){
+    console.log('Audit page script loading...');
+    
+    // Router already ensures AdminApi is available
+    function initializeAuditPage() {
+      console.log('AdminApi is available, initializing audit page...');
+      
+      const q = document.getElementById('a_q');
+      const tbody = document.getElementById('a_tbody');
+      
+      const load = async () => {
+        // Show loading skeleton in table
+        tbody.innerHTML = `
+          <tr class="table-loading-row">
+            <td><div class="loading-placeholder medium"></div></td>
+            <td><div class="loading-placeholder short"></div></td>
+            <td><div class="loading-placeholder long"></div></td>
+            <td><div class="loading-placeholder medium"></div></td>
+          </tr>
+          <tr class="table-loading-row">
+            <td><div class="loading-placeholder long"></div></td>
+            <td><div class="loading-placeholder medium"></div></td>
+            <td><div class="loading-placeholder short"></div></td>
+            <td><div class="loading-placeholder long"></div></td>
+          </tr>
+          <tr class="table-loading-row">
+            <td><div class="loading-placeholder short"></div></td>
+            <td><div class="loading-placeholder long"></div></td>
+            <td><div class="loading-placeholder medium"></div></td>
+            <td><div class="loading-placeholder short"></div></td>
+          </tr>
+        `;
+        
+        try {
+          // Build query parameters
+          const query = new URLSearchParams();
+          if (q.value) query.append('q', q.value);
+          query.append('limit', '200');
+          
+          const queryString = query.toString() ? '?' + query.toString() : '?limit=200';
+          const data = await AdminApi.apiGet('/admin/audit' + queryString, true, 'Loading audit logs...');
+          tbody.innerHTML = '';
+          
+          if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><div class="empty-content"><i class="fas fa-list-alt"></i><p>No audit logs found</p><small>System activity will appear here</small></div></td></tr>';
+            return;
+          }
+          
+          for (const r of data) {
+            const ts = r.timestamp || r.ts || 0;
+            const d = ts ? new Date(ts * 1000) : null;
+            const tr = document.createElement('tr');
+            // Format target readably
+            const targetType = r.target_type || '';
+            const targetName = r.target_name || r.target_id || '';
+            const targetHtml = targetType
+              ? `<span class="badge" style="background:var(--card-hover);color:var(--muted);border:1px solid var(--border);font-size:10px;margin-right:4px;">${targetType}</span>${targetName}`
+              : targetName;
+            tr.innerHTML = `<td>${d ? d.toLocaleString() : '<span style="color:var(--muted)">N/A</span>'}</td><td>${r.actor || ''}</td><td>${r.action || ''}</td><td>${targetHtml}</td>`;
+            tbody.appendChild(tr);
+          }
+        } catch(e) {
+          tbody.innerHTML = `<tr><td colspan="4" class="error-state"><div class="error-content"><i class="fas fa-exclamation-triangle"></i><p>Error loading audit logs</p><small>${e.message}</small></div></td></tr>`;
+        }
+      };
+
+      // Search functionality
+      document.getElementById('a_search').onclick = load;
+      
+      // Refresh button - clears search and refreshes all
+      document.getElementById('a_refresh').onclick = function() {
+        q.value = '';
+        load();
+        if (window.showToast) {
+          window.showToast('Audit logs refreshed - showing all entries', 'info');
+        }
+      };
+
+      // Export CSV functionality (matching sessions implementation)
+      document.getElementById('a_export_csv').onclick = async function() {
+        try {
+          // Build query parameters for export (same as current search)
+          const query = new URLSearchParams();
+          if (q.value) query.append('q', q.value);
+          query.append('format', 'csv');
+          
+          const queryString = query.toString() ? '?' + query.toString() : '?format=csv';
+          
+          // Use apiGetText for CSV download (same as sessions)
+          const csvData = await AdminApi.apiGetText('/admin/audit/export' + queryString, true, 'Exporting audit logs...');
+          const blob = new Blob([csvData], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `audit_export_${new Date().toISOString().split('T')[0]}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+          
+          if (window.showToast) {
+            window.showToast('Audit logs exported successfully!', 'success');
+          }
+        } catch(e) {
+          console.error('Export error:', e);
+          if (window.showToast) {
+            window.showToast('Export failed: ' + e.message, 'error');
+          } else {
+            alert('Export failed: ' + e.message);
+          }
+        }
+      };
+
+      // Enter key support for search
+      q.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') load();
+      });
+      
+      // Initial load
+      load();
+    }
+    
+    // Expose function for router (router will call this when ready)
+    window.initAuditPage = initializeAuditPage;
+  })();
+</script>
+</div>
+
+

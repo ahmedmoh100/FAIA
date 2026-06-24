@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAIA Admin</title>
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/responsive-fixes.css">
+  <style>
+    /* Role-based hiding */
+    .admin-only.hidden-for-professor {
+      display: none !important;
+    }
+  </style>
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext y='24' x='4' font-size='24'%3EF%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <!-- Global Loading Overlay -->
+  <div id="globalLoader" class="loading-overlay">
+    <div class="main-loader">
+      <div class="loader-ring"></div>
+      <div class="loader-ring"></div>
+      <div class="loader-ring"></div>
+      <div class="loader-ring"></div>
+    </div>
+    <div class="loader-dots">
+      <div class="loader-dot"></div>
+      <div class="loader-dot"></div>
+      <div class="loader-dot"></div>
+    </div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+    <div class="loading-subtext" id="loadingSubtext">Please wait while we prepare your dashboard</div>
+    <div class="progress-loader">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <button id="menuToggle" class="btn menu-toggle" style="display:none" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="brand">
+        <i class="fas fa-tachometer-alt"></i> FAIA Admin
+      </div>
+      <div class="spacer"></div>
+      <button id="logoutBtn" class="btn" style="display:none">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </header>
+    <div class="layout">
+      <nav class="sidebar">
+        <!-- Admin-only sections -->
+        <div class="section admin-only">Overview</div>
+        <a href="#/overview" class="nav-link active admin-only">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <div class="section admin-only">Management</div>
+        <a href="#/users" class="nav-link admin-only">
+          <i class="fas fa-users"></i> Users
+        </a>
+        <a href="#/sessions" class="nav-link admin-only">
+          <i class="fas fa-clock"></i> Sessions
+        </a>
+        <a href="#/audit" class="nav-link admin-only">
+          <i class="fas fa-list"></i> Audit
+        </a>
+        
+        <!-- Teacher & Admin sections -->
+        <div class="section">Course Content</div>
+        <a href="#/materials" class="nav-link">
+          <i class="fas fa-book"></i> Materials
+        </a>
+        
+        <!-- Admin-only settings -->
+        <div class="section admin-only">Settings</div>
+        <a href="#/system" class="nav-link admin-only">
+          <i class="fas fa-cog"></i> System
+        </a>
+      </nav>
+      <main class="content">
+        <div id="loginView" class="card" style="display:block">
+          <h2><i class="fas fa-shield-alt"></i> Admin Login</h2>
+          <p class="muted">Login with your admin credentials</p>
+          <form id="loginForm" onsubmit="return false;">
+            <input id="usernameInput" type="text" placeholder="Username" class="input" style="margin-bottom: 12px;" autocomplete="username" />
+            <input id="passwordInput" type="password" placeholder="Password" class="input" autocomplete="current-password" />
+            <button id="loginBtn" class="btn primary" type="submit">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+          </form>
+          <div id="loginMsg" class="msg"></div>
+        </div>
+
+        <div id="appView" style="display:none">
+          <div id="routeRoot"></div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+
+  <script>
+    // IMMEDIATE ROLE CHECK AND VIEW TOGGLE - BEFORE ANY OTHER SCRIPTS
+    (function() {
+      const token = localStorage.getItem('ADMIN_TOKEN');  // Use consistent key
+      
+      // Immediately write style to hide/show correct view
+      if (token) {
+        document.write('<style>#loginView{display:none !important;}#appView{display:block !important;}</style>');
+      }
+      
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          window.userRole = payload.role;
+          console.log('🔐 IMMEDIATE: Role detected:', payload.role);
+          
+          if (payload.role === 'PROFESSOR') {
+            window.isProfessor = true;
+            // Force professor to materials page IMMEDIATELY
+            const currentHash = window.location.hash;
+            const adminPages = ['#/overview', '#/users', '#/sessions', '#/audit', '#/system', '', '#/'];
+            if (adminPages.includes(currentHash)) {
+              console.log('🔐 IMMEDIATE: Professor on admin page, forcing materials');
+              window.location.replace('#/materials');  // Use replace to avoid history
+            }
+            
+            // Hide admin sections immediately
+            document.addEventListener('DOMContentLoaded', function() {
+              document.querySelectorAll('.admin-only').forEach(el => {
+                el.style.display = 'none';
+              });
+            });
+          } else if (payload.role === 'ADMIN') {
+            window.isProfessor = false;
+          }
+        } catch (e) {
+          console.log('Could not decode token on immediate check');
+        }
+      }
+    })();
+  </script>
+  <script src="/js/loader.js"></script>
+  <script src="/js/toast.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="/js/system.js"></script>
+  <script>
+    // Global state to prevent duplicate initialization
+    window.appInitialized = false;
+    window.currentRoute = null;
+    window.loadedScripts = new Set();
+    window.activeCharts = new Map();
+    
+    // Store user role globally (may already be set by immediate check)
+    if (!window.userRole) {
+      window.userRole = null;
+    }
+    
+    // Function to apply role-based UI restrictions
+    function applyRoleBasedUI(role) {
+      window.userRole = role;
+      console.log('🔐 Applying role-based UI for:', role);
+      
+      if (role === 'PROFESSOR') {
+        console.log('👨‍🏫 Professor mode activated - hiding admin sections');
+        
+        // Hide all admin-only elements
+        document.querySelectorAll('.admin-only').forEach(el => {
+          el.style.display = 'none';
+          el.classList.add('hidden-for-professor');
+        });
+        
+        // Change title
+        const brandEl = document.querySelector('.brand');
+        if (brandEl) {
+          brandEl.innerHTML = '<i class="fas fa-book"></i> FAIA Professor Portal';
+        }
+        
+        // Don't redirect here - it's handled by immediate role check
+        // Just hide the admin sections
+      } else if (role === 'ADMIN') {
+        console.log('👑 Admin mode - showing all sections');
+        
+        // Show all elements for admin
+        document.querySelectorAll('.admin-only').forEach(el => {
+          el.style.display = '';
+          el.classList.remove('hidden-for-professor');
+        });
+        
+        // Reset title
+        const brandEl = document.querySelector('.brand');
+        if (brandEl) {
+          brandEl.innerHTML = '<i class="fas fa-tachometer-alt"></i> FAIA Admin';
+        }
+      }
+    }
+    
+    // Check role on page load (if already logged in)
+    function checkRoleOnLoad() {
+      const token = localStorage.getItem('ADMIN_TOKEN');
+      if (token) {
+        try {
+          // Decode JWT to get role
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const role = payload.role || 'ADMIN';
+          console.log('Page load - detected role:', role);
+          applyRoleBasedUI(role);
+        } catch (e) {
+          console.log('Could not decode token on load, assuming ADMIN');
+          applyRoleBasedUI('ADMIN');
+        }
+      }
+    }
+    
+    // Run on page load - do this early
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', checkRoleOnLoad);
+    } else {
+      checkRoleOnLoad();
+    }
+
+    // lightweight router: extend to all pages
+    (function () {
+      const origRender = window.render;
+
+      function setActive(route) {
+        const links = document.querySelectorAll('.sidebar .nav-link');
+        links.forEach(a => a.classList.remove('active'));
+        const map = {
+          '#/overview': "#/overview",
+          '#/users': "#/users",
+          '#/audit': "#/audit",
+          '#/materials': "#/materials",
+          '#/system': "#/system",
+        };
+        const target = map[route] || '#/overview';
+        const el = Array.from(links).find(a => a.getAttribute('href') === target);
+        if (el) el.classList.add('active');
+      }
+
+      // Helper function to safely execute scripts without duplicates
+      function executePageScripts(container, pageType) {
+        const scripts = container.querySelectorAll('script');
+        scripts.forEach((script, index) => {
+          try {
+            const scriptContent = script.textContent || script.innerHTML;
+            // Use a safer method to generate script ID that handles Unicode
+            const scriptHash = scriptContent.length + '_' + index + '_' + pageType;
+            const scriptId = `${pageType}_${scriptHash}`;
+
+            // Skip if already loaded
+            if (window.loadedScripts.has(scriptId)) {
+              console.log('Script already loaded, skipping:', scriptId);
+              return;
+            }
+
+            // Mark as loaded
+            window.loadedScripts.add(scriptId);
+
+            if (script.src) {
+              const newScript = document.createElement('script');
+              newScript.src = script.src;
+              newScript.id = scriptId;
+              document.head.appendChild(newScript);
+            } else {
+              // Use Function constructor to avoid variable conflicts
+              const func = new Function(scriptContent);
+              func();
+            }
+          } catch (e) {
+            console.error('Error executing script:', e);
+          }
+        });
+      }
+
+      // Helper function to wait for AdminApi and initialize page
+      function waitAndInitPage(pageType, initFunction) {
+        function checkAndInit() {
+          if (typeof AdminApi === 'undefined') {
+            setTimeout(checkAndInit, 100);
+            return;
+          }
+
+          console.log(`AdminApi ready, initializing ${pageType} from router`);
+          if (window[initFunction]) {
+            console.log(`Calling ${initFunction}...`);
+            window[initFunction]();
+          } else {
+            console.log(`No ${initFunction} function found - this may indicate a script loading issue`);
+            // For users page, try to call it anyway after a delay
+            if (initFunction === 'initUsersPage') {
+              setTimeout(() => {
+                if (window[initFunction]) {
+                  console.log(`Found ${initFunction} after delay, calling now...`);
+                  window[initFunction]();
+                }
+              }, 200);
+            }
+          }
+        }
+
+        setTimeout(checkAndInit, 50);
+      }
+
+      window.render = function (route) {
+        // Check if professor is trying to access admin page
+        const adminPages = ['#/overview', '#/users', '#/sessions', '#/audit', '#/system'];
+        if (window.userRole === 'PROFESSOR' && adminPages.includes(route)) {
+          // Only show "access denied" if professor manually navigated there (not on login redirect)
+          const isManualNav = location.hash && !['', '#/', '#/overview'].includes(location.hash);
+          if (isManualNav) {
+            showToast('Access denied: Professors can only access Materials page', 'error');
+          }
+          window.location.hash = '#/materials';
+          return;
+        }
+        
+        // Prevent duplicate renders of the same route
+        if (window.currentRoute === route) {
+          console.log('Route already rendered, skipping:', route);
+          return;
+        }
+
+        window.currentRoute = route;
+        setActive(route);
+
+        // Show loader for page navigation
+        const pageName = route.replace('#/', '') || 'overview';
+        if (window.Loader) {
+          window.Loader.showForPage(pageName);
+        }
+
+        switch (route) {
+          case '#/users':
+            routeRoot.innerHTML = '';
+            fetch('/pages/users.html').then(r => r.text()).then(html => {
+              routeRoot.innerHTML = html;
+              console.log('Users page loaded via router');
+              executePageScripts(routeRoot, 'users');
+              waitAndInitPage('users', 'initUsersPage');
+              // Hide loader after page loads
+              setTimeout(() => window.Loader && window.Loader.hide(), 800);
+            }).catch(err => {
+              console.error('Error loading users page:', err);
+              window.Loader && window.Loader.hide();
+            });
+            break;
+          case '#/sessions':
+            routeRoot.innerHTML = '';
+            fetch('/pages/sessions.html').then(r => r.text()).then(html => {
+              routeRoot.innerHTML = html;
+              console.log('Sessions page loaded via router');
+              executePageScripts(routeRoot, 'sessions');
+              waitAndInitPage('sessions', 'initSessionsPage');
+              setTimeout(() => window.Loader && window.Loader.hide(), 800);
+            }).catch(err => {
+              console.error('Error loading sessions page:', err);
+              window.Loader && window.Loader.hide();
+            });
+            break;
+          case '#/audit':
+            routeRoot.innerHTML = '';
+            fetch('/pages/audit.html').then(r => r.text()).then(html => {
+              routeRoot.innerHTML = html;
+              console.log('Audit page loaded via router');
+              executePageScripts(routeRoot, 'audit');
+              waitAndInitPage('audit', 'initAuditPage');
+              setTimeout(() => window.Loader && window.Loader.hide(), 800);
+            }).catch(err => {
+              console.error('Error loading audit page:', err);
+              window.Loader && window.Loader.hide();
+            });
+            break;
+          case '#/materials':
+            routeRoot.innerHTML = '';
+            fetch('/pages/materials.html').then(r => r.text()).then(html => {
+              routeRoot.innerHTML = html;
+              console.log('Materials page loaded via router');
+              executePageScripts(routeRoot, 'materials');
+              waitAndInitPage('materials', 'initMaterialsPage');
+              setTimeout(() => window.Loader && window.Loader.hide(), 800);
+            }).catch(err => {
+              console.error('Error loading materials page:', err);
+              window.Loader && window.Loader.hide();
+            });
+            break;
+          default:
+            if (origRender) {
+              origRender(route);
+              setTimeout(() => window.Loader && window.Loader.hide(), 600);
+            } else {
+              // Fallback to app.js render function
+              if (window.render && window.render !== arguments.callee) {
+                window.render(route);
+                setTimeout(() => window.Loader && window.Loader.hide(), 600);
+              }
+            }
+        }
+      }
+
+      // Single initialization function
+      function initializeApp() {
+        if (window.appInitialized) {
+          console.log('App already initialized, skipping');
+          return;
+        }
+
+        window.appInitialized = true;
+        
+        // Only initialize if user is logged in
+        const token = localStorage.getItem('ADMIN_TOKEN');
+        if (!token) {
+          console.log('No token found, showing login view');
+          return;
+        }
+        
+        // Determine default route based on role
+        let defaultHash = '#/overview';
+        if (window.userRole === 'PROFESSOR') {
+          defaultHash = '#/materials';
+        }
+        
+        const hash = window.location.hash || defaultHash;
+        console.log('Initializing app with hash:', hash, '(role:', window.userRole, ')');
+
+        // Show initial loader
+        if (window.Loader) {
+          window.Loader.show('Initializing...', 'Setting up your dashboard');
+        }
+
+        window.render(hash);
+      }
+
+      // Handle hash changes for navigation
+      window.addEventListener('hashchange', function () {
+        const hash = window.location.hash || '#/overview';
+        console.log('Hash changed to:', hash);
+        window.render(hash);
+      });
+
+      // Single initialization point
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeApp);
+      } else {
+        initializeApp();
+      }
+    })();
+  </script>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3><i class="fas fa-question-circle"></i> <span id="confirmTitle">Confirm Action</span></h3>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMessage">Are you sure you want to proceed?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn" id="confirmCancel">Cancel</button>
+        <button type="button" class="btn danger" id="confirmOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Modal -->
+  <div id="inputModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width: 450px;">
+      <div class="modal-header">
+        <h3><i class="fas fa-edit"></i> <span id="inputTitle">Input Required</span></h3>
+      </div>
+      <div class="modal-body">
+        <p id="inputMessage">Please enter the required information:</p>
+        <div class="form-group">
+          <label id="inputLabel" for="inputField">Input:</label>
+          <input type="text" id="inputField" class="input" placeholder="Enter value...">
+          <small id="inputHelp" class="form-help"></small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn" id="inputCancel">Cancel</button>
+        <button type="button" class="btn primary" id="inputOk">OK</button>
+      </div>
+    </div>
+  </div>
+  <!-- Sidebar overlay for mobile -->
+  <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+  <script>
+    // Hamburger menu toggle
+    (function() {
+      const menuToggle = document.getElementById('menuToggle');
+      const sidebar = document.querySelector('.sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
+      }
+
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+      }
+
+      menuToggle.addEventListener('click', function() {
+        sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+      });
+
+      overlay.addEventListener('click', closeSidebar);
+
+      // Close sidebar on nav link click (mobile)
+      document.querySelectorAll('.nav-link').forEach(function(link) {
+        link.addEventListener('click', function() {
+          if (window.innerWidth <= 768) closeSidebar();
+        });
+      });
+
+      // Show/hide hamburger based on screen size
+      function checkSize() {
+        menuToggle.style.display = window.innerWidth <= 768 ? 'inline-flex' : 'none';
+        if (window.innerWidth > 768) closeSidebar();
+      }
+
+      window.addEventListener('resize', checkSize);
+      checkSize();
+    })();
+  </script>
+
+</body>
+
+</html>

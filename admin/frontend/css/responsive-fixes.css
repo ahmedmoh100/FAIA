@@ -1,0 +1,336 @@
+/* Responsive Layout Fixes for Admin Panel */
+
+/* Hamburger button - only visible on mobile */
+.menu-toggle {
+  display: none;
+  padding: 8px 10px;
+  margin-right: 8px;
+  background: transparent;
+  border-color: var(--border);
+}
+
+/* Sidebar overlay for mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 199;
+}
+
+.sidebar-overlay.show {
+  display: block;
+}
+
+/* Make tables scrollable on small screens */
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  min-width: 800px; /* Ensure table doesn't squish */
+}
+
+/* Make forms more flexible */
+.form-group {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  min-width: 0; /* Allow shrinking */
+}
+
+/* Fix modal on small screens */
+.modal-content {
+  max-width: 90vw !important;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Make control groups wrap on small screens */
+.sessions-controls,
+.control-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.control-group {
+  flex: 1 1 200px; /* Grow, shrink, base 200px */
+  min-width: 150px;
+}
+
+.control-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.control-group .input {
+  width: 100%;
+}
+
+/* Make buttons wrap and stay visible */
+.control-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.control-actions .btn {
+  flex: 0 1 auto;
+  white-space: nowrap;
+}
+
+/* Fix stats cards on small screens */
+.sessions-stats,
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Quick stats (materials page) */
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1400px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --sidebar-width: 220px;
+  }
+  
+  .page-container {
+    max-width: 100%;
+    padding: 16px;
+  }
+  
+  .content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  :root {
+    --sidebar-width: 200px;
+  }
+  
+  /* Stack controls vertically on medium screens */
+  .sessions-controls {
+    flex-direction: column;
+  }
+  
+  .control-group {
+    flex: 1 1 100%;
+  }
+  
+  /* Make tables more compact */
+  .table {
+    font-size: 13px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 8px;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 240px;
+  }
+  
+  /* Full width content on mobile */
+  .content {
+    margin-left: 0 !important;
+    width: 100%;
+    padding: 16px;
+  }
+  
+  /* Stack stat cards */
+  .sessions-stats,
+  .stats-grid,
+  .quick-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  /* Make modals full screen on mobile */
+  .modal-content {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    margin: 20px auto;
+  }
+  
+  /* Smaller buttons on mobile */
+  .btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  
+  /* Make action buttons stack */
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-buttons .btn {
+    width: 100%;
+  }
+  
+  /* Responsive table actions */
+  .table-actions {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  
+  .table-actions .btn.danger {
+    padding: 12px 16px;
+    font-size: 14px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small screens */
+  .topbar {
+    padding: 0 12px;
+  }
+  
+  .brand {
+    font-size: 16px;
+  }
+  
+  .page-header h2 {
+    font-size: 20px;
+  }
+  
+  /* Stack all stat cards to single column */
+  .sessions-stats,
+  .stats-grid,
+  .quick-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Very compact tables */
+  .table {
+    font-size: 12px;
+    min-width: 600px; /* Still scrollable but more compact */
+  }
+  
+  .table th,
+  .table td {
+    padding: 6px;
+  }
+  
+  /* Hide less important columns on tiny screens */
+  .table .hide-mobile {
+    display: none;
+  }
+}
+
+/* Fix for overflow issues */
+.main-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Content area must not overflow horizontally */
+.content {
+  overflow-x: hidden;
+  min-width: 0; /* flex child must be able to shrink below content size */
+}
+
+/* Page containers must not exceed content width */
+.page-container {
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Layout flex children must be able to shrink */
+.layout {
+  min-width: 0;
+}
+
+/* Cards and grids must not overflow their container */
+.card,
+.dashboard-grid,
+.sessions-stats,
+.quick-stats,
+.stats-grid {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Ensure buttons are always visible */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+}
+
+/* Fix for long text in tables */
+.table td {
+  word-wrap: break-word;
+  max-width: 300px;
+}
+
+/* Make badges more compact */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Ensure dropdowns are visible */
+select.input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+/* Fix for form inputs */
+.input {
+  min-height: 38px;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+/* Ensure modals are scrollable */
+.modal-body {
+  max-height: calc(90vh - 150px);
+  overflow-y: auto;
+}
