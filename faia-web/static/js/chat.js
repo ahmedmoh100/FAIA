@@ -710,17 +710,7 @@ class FAIAWebApp {
                     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                     word-wrap: break-word;
                     line-height: 1.4;
-                ">
-                ${message.fileCard ? `
-                    <div class="file-attachment-card">
-                        <i class="fas ${message.fileCard.icon} file-attach-icon"></i>
-                        <div class="file-attach-info">
-                            <span class="file-attach-name">${message.fileCard.filename}</span>
-                            ${message.fileCard.sizeStr ? `<span class="file-attach-size">${message.fileCard.sizeStr}</span>` : ''}
-                        </div>
-                    </div>
-                ` : ''}
-                ${this.formatMessage(message.content)}</div>
+                ">${message.fileCard ? `<div class="file-attachment-card"><i class="fas ${message.fileCard.icon} file-attach-icon"></i><div class="file-attach-info"><span class="file-attach-name">${message.fileCard.filename}</span>${message.fileCard.sizeStr ? `<span class="file-attach-size">${message.fileCard.sizeStr}</span>` : ''}</div></div>` : ''}${this.formatMessage(message.content)}</div>
                 <div class="message-time" style="
                     font-size: 11px;
                     color: #6c757d;
@@ -775,6 +765,7 @@ class FAIAWebApp {
     formatMessage(content) {
         // Simple formatting for line breaks and basic HTML
         return content
+            .trim()
             .replace(/\n/g, '<br>')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>');
