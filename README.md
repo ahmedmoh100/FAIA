@@ -2,7 +2,7 @@
 
 An AI-powered educational chatbot built for university students. Professors upload course materials, students query them through a chat interface powered by RAG (Retrieval-Augmented Generation) and a local LLM — no cloud API required.
 
-Built as a graduation project at Future University of Sudan by Ahmed Mahmoud Hamza (Student ID: 202003039).
+Built as a graduation project at Future University of Sudan by Ahmed Mahmoud Hamza.
 
 ---
 
@@ -234,6 +234,5 @@ MIT License — see [LICENSE](LICENSE)
 
 ## Author
 
-Ahmed Mahmoud Hamza  
-IT Graduate, Future University of Sudan  
-Student ID: 202003039
+Ahmed Mahmoud Hamza
+IT Graduate, Future University of Sudan
