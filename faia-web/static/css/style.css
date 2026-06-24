@@ -1599,3 +1599,44 @@ input:focus {
         font-size: 11px;
     }
 }
+
+/* ── File Attachment Card (replaces emoji indicator) ── */
+.file-attachment-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    min-width: 180px;
+    max-width: 280px;
+}
+
+.file-attach-icon {
+    font-size: 20px;
+    opacity: 0.9;
+    flex-shrink: 0;
+}
+
+.file-attach-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.file-attach-name {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.file-attach-size {
+    font-size: 11px;
+    opacity: 0.75;
+}

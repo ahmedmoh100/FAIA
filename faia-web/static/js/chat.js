@@ -464,12 +464,18 @@ class FAIAWebApp {
                 }
             }
 
-            // Add user message - show small paperclip indicator if file is attached (first use only)
+            // Add user message - show file card if file is attached (first use only)
             let displayMessage = message;
+            let fileCard = null;
             if (this.lastUploadedFile && this.lastUploadedFile.processed && !this.lastUploadedFile.used) {
-                displayMessage = `📎 ${message}`;
+                const sizeKB = this.lastUploadedFile.size ? Math.round(this.lastUploadedFile.size / 1024) : null;
+                const sizeStr = sizeKB ? (sizeKB >= 1024 ? (sizeKB/1024).toFixed(1) + ' MB' : sizeKB + ' KB') : '';
+                const ext = this.lastUploadedFile.filename.split('.').pop().toLowerCase();
+                const icons = { pdf: 'fa-file-pdf', docx: 'fa-file-word', doc: 'fa-file-word', xlsx: 'fa-file-excel', xls: 'fa-file-excel', txt: 'fa-file-alt' };
+                const icon = icons[ext] || 'fa-file';
+                fileCard = { filename: this.lastUploadedFile.filename, sizeStr, icon };
             }
-            this.addMessage(displayMessage, 'user');
+            this.addMessage(displayMessage, 'user', null, null, fileCard);
             this.messageInput.value = '';
 
             // Store the current prompt for feedback system
@@ -635,14 +641,15 @@ class FAIAWebApp {
         }, 500); // 500ms debounce
     }
 
-    addMessage(content, sender, type = 'normal', sources = null) {
+    addMessage(content, sender, type = 'normal', sources = null, fileCard = null) {
         const message = {
             id: Date.now(),
             content: content,
             sender: sender,
             timestamp: new Date(),
-            type: type, // normal, warning, error, flagged
-            sources: sources || null
+            type: type,
+            sources: sources || null,
+            fileCard: fileCard || null
         };
 
         this.messages.push(message);
@@ -703,7 +710,17 @@ class FAIAWebApp {
                     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                     word-wrap: break-word;
                     line-height: 1.4;
-                ">${this.formatMessage(message.content)}</div>
+                ">
+                ${message.fileCard ? `
+                    <div class="file-attachment-card">
+                        <i class="fas ${message.fileCard.icon} file-attach-icon"></i>
+                        <div class="file-attach-info">
+                            <span class="file-attach-name">${message.fileCard.filename}</span>
+                            ${message.fileCard.sizeStr ? `<span class="file-attach-size">${message.fileCard.sizeStr}</span>` : ''}
+                        </div>
+                    </div>
+                ` : ''}
+                ${this.formatMessage(message.content)}</div>
                 <div class="message-time" style="
                     font-size: 11px;
                     color: #6c757d;
@@ -1039,6 +1056,7 @@ class FAIAWebApp {
                 // Store uploaded file info for context
                 this.lastUploadedFile = {
                     filename: file.name,
+                    size: file.size,
                     sessionId: this.sessionId || 'web_session',
                     fileId: response.file?.file_id,
                     uploadedAt: new Date(),

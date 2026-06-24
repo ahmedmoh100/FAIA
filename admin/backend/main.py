@@ -1529,6 +1529,8 @@ async def admin_add_user(body: UserCreate, admin: AdminUser = Depends(get_curren
                 "created_at": new_user.created_at.timestamp() if new_user.created_at else 0
             }
             
+        except HTTPException:
+            raise
         except Exception as e:
             logger.error("Database user creation failed: %s", e)
             raise HTTPException(status_code=500, detail=("Failed to create user: %s" % str(e)))
