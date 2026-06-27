@@ -5,10 +5,7 @@
 --
 --  SETUP:
 --    1. Run this file once to create all tables
---    2. A default admin user is seeded at the bottom
---       Username: admin
---       Password: Admin@1234
---       !! CHANGE THIS PASSWORD immediately after first login !!
+--    2. Create your admin user via the API after setup (see bottom of file)
 -- =============================================
 
 CREATE DATABASE IF NOT EXISTS faia_chat_system;
@@ -425,28 +422,16 @@ INSERT INTO `system_settings` (`setting_key`, `setting_value`) VALUES
   ('guest_token_limit',  '1000');
 
 -- =============================================
--- SEED: Default Admin User
+-- SEED: Create Your Admin User
 -- =============================================
--- Username : admin
--- Password : Admin@1234
--- Algorithm: SHA256(salt + password)
+-- No default admin is seeded for security reasons.
+-- Create your admin account after setup via the registration API:
 --
--- !! CHANGE THIS PASSWORD immediately after first login !!
--- You can change it via the admin panel under your profile,
--- or by running a new INSERT with a fresh salt and hash.
+--   POST /register
+--   { "username": "your_admin", "password": "your_password", "email": "admin@yourdomain.com" }
+--
+-- Then promote to ADMIN role:
+--   UPDATE users SET role = 'ADMIN' WHERE username = 'your_admin';
+--
+-- Or use the admin panel once the backend is running.
 -- =============================================
-INSERT INTO `users` (username, email, password_hash, password_salt, role, status, created_at)
-VALUES (
-  'admin',
-  'admin@faia.local',
-  '7223819efd9af2932198cf5f82822912fa39aabea1fc542f4e5a83ac52970ea8',
-  'faia0000faia0000faia0000faia0000',
-  'ADMIN',
-  'ACTIVE',
-  NOW()
-);
-
--- Give the default admin a token limit entry
-INSERT INTO `token_limits` (user_id, max_tokens, used_tokens, period_start, period_end)
-SELECT user_id, 10000000, 0, NOW(), DATE_ADD(NOW(), INTERVAL 10 YEAR)
-FROM users WHERE username = 'admin';

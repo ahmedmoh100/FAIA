@@ -186,12 +186,12 @@ app = FastAPI(title=API_TITLE, version=API_VERSION)
 # Enhanced CORS configuration for admin panel
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("ADMIN_CORS_ORIGINS", "*").split(","),
+    allow_origins=os.getenv("ADMIN_CORS_ORIGINS", "http://localhost:8090,http://localhost:5500").split(","),
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],  # Explicitly list all methods
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
-    max_age=3600  # Cache preflight requests for 1 hour
+    max_age=3600
 )
 
 
