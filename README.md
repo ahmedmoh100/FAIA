@@ -234,6 +234,7 @@ All AI behavior, RAG settings, prompts, and moderation rules are in `backend/con
 - `rag.retrieval.top_k` — how many chunks to retrieve per query
 - `rag.retrieval.min_similarity` — minimum cosine similarity threshold
 - `moderation.risk_levels` — keyword-based content moderation rules
+- `moderation.notifications.enabled` — set to `false` by design; email notifications are not implemented. The `notify_on_warning` and `notify_on_suspension` flags control internal workflow behavior independently of email delivery.
 
 ---
 
