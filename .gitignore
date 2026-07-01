@@ -71,7 +71,9 @@ models/
 *.pt
 *.pth
 phi2/
-D:/phi2
+*.pt
+*.bin
+*.pth
 
 # Android
 local.properties

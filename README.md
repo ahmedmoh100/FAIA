@@ -173,7 +173,7 @@ python -m http.server 8090
 
 ### Default admin credentials
 
-Create your admin user by registering through the API or directly in MySQL. The system uses bcrypt hashed passwords — no plaintext credentials are stored.
+Create your admin user by registering through the API or directly in MySQL. The system uses SHA256 with random salts for password hashing.
 
 ---
 
@@ -183,6 +183,17 @@ With all services running:
 
 ```bash
 python test_system.py
+```
+
+The test script reads credentials from environment variables. Set them before running:
+
+```bash
+set TEST_STUDENT_USER=yourstudent
+set TEST_STUDENT_PASS=yourpass
+set TEST_PROF_USER=yourprofessor
+set TEST_PROF_PASS=yourpass
+set TEST_ADMIN_USER=youradmin
+set TEST_ADMIN_PASS=yourpass
 ```
 
 Expected output: **24/24 tests passing** across 8 test categories (health, auth, chat, context retention, file upload, admin, password reset, token tracking).

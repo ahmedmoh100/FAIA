@@ -46,4 +46,4 @@ Pillow==11.1.0
 
 # ── Monitoring / Async ────────────────────────────────────
 aiohttp==3.14.1
-psutil==5.9.8
+psutil==6.1.0

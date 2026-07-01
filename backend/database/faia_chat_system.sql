@@ -377,7 +377,7 @@ BEGIN
   JOIN chats c ON c.user_id = tl.user_id
   SET tl.used_tokens = tl.used_tokens + COALESCE(NEW.token_count, 0)
   WHERE c.chat_id = NEW.chat_id
-    AND tl.period_end > CURRENT_TIMESTAMP;
+    AND (tl.period_end IS NULL OR tl.period_end > CURRENT_TIMESTAMP);
 END$$
 
 -- Auto-update session.last_activity when messages are sent

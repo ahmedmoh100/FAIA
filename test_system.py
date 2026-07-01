@@ -8,18 +8,20 @@ Servers must be running first.
 import requests
 import json
 import time
+import os
 
 BACKEND = "http://localhost:8000"
 WEB = "http://localhost:8080"
 ADMIN = "http://localhost:8001"
 
-# Test credentials — real accounts in the database
-STUDENT_USER = "kiro"
-STUDENT_PASS = "123456"
-PROF_USER = "testprof"
-PROF_PASS = "prof1234"
-ADMIN_USER = "akino"
-ADMIN_PASS = "Admin123@"
+# Test credentials — set these via environment variables or update for your deployment
+# Example: set TEST_STUDENT_USER=yourstudent before running
+STUDENT_USER = os.getenv("TEST_STUDENT_USER", "student")
+STUDENT_PASS = os.getenv("TEST_STUDENT_PASS", "Student@1234")
+PROF_USER = os.getenv("TEST_PROF_USER", "professor")
+PROF_PASS = os.getenv("TEST_PROF_PASS", "Prof@1234")
+ADMIN_USER = os.getenv("TEST_ADMIN_USER", "admin")
+ADMIN_PASS = os.getenv("TEST_ADMIN_PASS", "Admin@1234")
 
 results = []
 timings = []
@@ -248,7 +250,7 @@ else:
 print("\n[7] Forgot Password Flow")
 try:
     r = requests.post(f"{BACKEND}/forgot-password",
-        json={"email": "akino@gmail.com"}, timeout=10)
+        json={"email": os.getenv("TEST_ADMIN_EMAIL", "admin@faia.local")}, timeout=10)
     data = r.json()
     test("Forgot password request", data.get("success"), str(data.get("message","")))
 except Exception as e:
